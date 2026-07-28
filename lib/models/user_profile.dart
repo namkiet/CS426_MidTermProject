@@ -11,9 +11,9 @@ class UserProfile {
     this.phone,
     this.avatarUrl,
     this.address,
-  })  : assert(name.isNotEmpty),
-      assert(isValidEmail(email)),
-      assert(isValidPhone(phone));
+  }) : assert(name.isNotEmpty),
+       assert(isValidEmail(email)),
+       assert(isValidPhone(phone));
 
   static bool isValidEmail(String email) {
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
@@ -25,18 +25,18 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'email': email,
-        'phone': phone,
-        'avatarUrl': avatarUrl,
-        'address': address,
-      };
+    'name': name,
+    'email': email,
+    'phone': phone,
+    'avatarUrl': avatarUrl,
+    'address': address,
+  };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        name: json['name'] as String,
-        email: json['email'] as String,
-        phone: json['phone'] as String?,
-        avatarUrl: json['avatarUrl'] as String?,
-        address: json['address'] as String?,
-      );
+    name: json['name'] as String,
+    email: json['email'] as String,
+    phone: json['phone'] as String?,
+    avatarUrl: json['avatarUrl'] as String?,
+    address: json['address'] as String?,
+  );
 }

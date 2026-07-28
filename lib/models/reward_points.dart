@@ -10,11 +10,9 @@ class RewardPoints {
 
   void award(int amount, {Order? order}) {
     balance += amount;
-    transactions.add(Transaction(
-      type: TransactionType.earn,
-      amount: amount,
-      order: order,
-    ));
+    transactions.add(
+      Transaction(type: TransactionType.earn, amount: amount, order: order),
+    );
   }
 
   void redeem(int amount, {required RedeemableItem redeemableItem}) {
@@ -23,11 +21,13 @@ class RewardPoints {
       throw StateError('Insufficient points');
     }
     balance -= amount;
-    transactions.add(Transaction(
-      type: TransactionType.redeem,
-      amount: amount,
-      redeemableItem: redeemableItem,
-    ));
+    transactions.add(
+      Transaction(
+        type: TransactionType.redeem,
+        amount: amount,
+        redeemableItem: redeemableItem,
+      ),
+    );
   }
 
   int calculateTotalEarned() {
@@ -37,15 +37,17 @@ class RewardPoints {
   }
 
   Map<String, dynamic> toJson() => {
-        'balance': balance,
-        'transactions': transactions.map((t) => t.toJson()).toList(),
-      };
+    'balance': balance,
+    'transactions': transactions.map((t) => t.toJson()).toList(),
+  };
 
   factory RewardPoints.fromJson(Map<String, dynamic> json) {
     final rp = RewardPoints(balance: json['balance'] as int);
-    rp.transactions
-        .addAll((json['transactions'] as List<dynamic>)
-            .map((t) => Transaction.fromJson(t as Map<String, dynamic>)));
+    rp.transactions.addAll(
+      (json['transactions'] as List<dynamic>).map(
+        (t) => Transaction.fromJson(Map<String, dynamic>.from(t)),
+      ),
+    );
     return rp;
   }
 }

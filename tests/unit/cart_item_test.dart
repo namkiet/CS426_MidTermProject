@@ -46,11 +46,8 @@ void main() {
 
     test('reject quantity zero or negative', () {
       expect(
-        () => CartItem(
-          product: product,
-          selectedCustomizations: {},
-          quantity: 0,
-        ),
+        () =>
+            CartItem(product: product, selectedCustomizations: {}, quantity: 0),
         throwsAssertionError,
       );
       expect(

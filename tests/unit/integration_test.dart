@@ -44,7 +44,10 @@ void main() {
       expect(cart.length, 2);
       expect(cart[0].calculateSubtotal(), 50000);
       expect(cart[1].calculateSubtotal(), 40000);
-      final cartTotal = cart.fold(0.0, (sum, item) => sum + item.calculateSubtotal());
+      final cartTotal = cart.fold(
+        0.0,
+        (sum, item) => sum + item.calculateSubtotal(),
+      );
       expect(cartTotal, 90000);
 
       final order = Order(items: cart);
@@ -59,7 +62,13 @@ void main() {
       ];
       expect(cart.fold(0.0, (s, i) => s + i.calculateSubtotal()), 25000);
 
-      cart.add(CartItem(product: latte, selectedCustomizations: {'size': 'Large'}, quantity: 2));
+      cart.add(
+        CartItem(
+          product: latte,
+          selectedCustomizations: {'size': 'Large'},
+          quantity: 2,
+        ),
+      );
       expect(cart.fold(0.0, (s, i) => s + i.calculateSubtotal()), 105000);
 
       cart.removeAt(0);
@@ -70,10 +79,7 @@ void main() {
     });
 
     test('empty cart cannot create order', () {
-      expect(
-        () => Order(items: []),
-        throwsAssertionError,
-      );
+      expect(() => Order(items: []), throwsAssertionError);
     });
 
     test('order toggles from ongoing to history on completion', () {
@@ -101,9 +107,11 @@ void main() {
       final card = LoyaltyCard();
       final rp = RewardPoints();
 
-      final order1 = Order(items: [
-        CartItem(product: espresso, selectedCustomizations: {}, quantity: 2),
-      ]);
+      final order1 = Order(
+        items: [
+          CartItem(product: espresso, selectedCustomizations: {}, quantity: 2),
+        ],
+      );
       order1.toggleStatus();
       card.increment();
       rp.award(order1.calculatePointsEarned(), order: order1);
@@ -111,9 +119,15 @@ void main() {
       expect(card.stampCount, 1);
       expect(rp.balance, 5);
 
-      final order2 = Order(items: [
-        CartItem(product: latte, selectedCustomizations: {'size': 'Large'}, quantity: 1),
-      ]);
+      final order2 = Order(
+        items: [
+          CartItem(
+            product: latte,
+            selectedCustomizations: {'size': 'Large'},
+            quantity: 1,
+          ),
+        ],
+      );
       order2.toggleStatus();
       card.increment();
       rp.award(order2.calculatePointsEarned(), order: order2);
@@ -127,9 +141,15 @@ void main() {
       final rp = RewardPoints();
 
       for (int i = 0; i < 8; i++) {
-        final order = Order(items: [
-          CartItem(product: espresso, selectedCustomizations: {}, quantity: 1),
-        ]);
+        final order = Order(
+          items: [
+            CartItem(
+              product: espresso,
+              selectedCustomizations: {},
+              quantity: 1,
+            ),
+          ],
+        );
         order.toggleStatus();
         card.increment();
         rp.award(order.calculatePointsEarned(), order: order);
@@ -144,8 +164,30 @@ void main() {
 
     test('redeem points reduces balance and records transaction', () {
       final rp = RewardPoints();
-      rp.award(100, order: Order(items: [CartItem(product: espresso, selectedCustomizations: {}, quantity: 1)]));
-      rp.award(50, order: Order(items: [CartItem(product: espresso, selectedCustomizations: {}, quantity: 1)]));
+      rp.award(
+        100,
+        order: Order(
+          items: [
+            CartItem(
+              product: espresso,
+              selectedCustomizations: {},
+              quantity: 1,
+            ),
+          ],
+        ),
+      );
+      rp.award(
+        50,
+        order: Order(
+          items: [
+            CartItem(
+              product: espresso,
+              selectedCustomizations: {},
+              quantity: 1,
+            ),
+          ],
+        ),
+      );
 
       rp.redeem(30, redeemableItem: freeCoffee);
       expect(rp.balance, 120);
@@ -160,7 +202,18 @@ void main() {
 
     test('cannot redeem more points than earned', () {
       final rp = RewardPoints();
-      rp.award(30, order: Order(items: [CartItem(product: espresso, selectedCustomizations: {}, quantity: 1)]));
+      rp.award(
+        30,
+        order: Order(
+          items: [
+            CartItem(
+              product: espresso,
+              selectedCustomizations: {},
+              quantity: 1,
+            ),
+          ],
+        ),
+      );
 
       expect(() => rp.redeem(50, redeemableItem: freeCoffee), throwsStateError);
       expect(rp.balance, 30);
@@ -191,17 +244,19 @@ void main() {
       final rp = RewardPoints();
 
       for (int i = 0; i < 10; i++) {
-        final order = Order(items: [
-          CartItem(
-            product: Product(
-              name: 'Espresso',
-              basePrice: 25000,
-              availableCustomizations: {},
+        final order = Order(
+          items: [
+            CartItem(
+              product: Product(
+                name: 'Espresso',
+                basePrice: 25000,
+                availableCustomizations: {},
+              ),
+              selectedCustomizations: {},
+              quantity: 1,
             ),
-            selectedCustomizations: {},
-            quantity: 1,
-          ),
-        ]);
+          ],
+        );
         order.toggleStatus();
         card.increment();
         rp.award(order.calculatePointsEarned(), order: order);
@@ -216,25 +271,33 @@ void main() {
     test('orders maintain independent statuses', () {
       final allOrders = <Order>[];
       for (int i = 0; i < 5; i++) {
-        allOrders.add(Order(items: [
-          CartItem(
-            product: Product(
-              name: 'Espresso',
-              basePrice: 25000,
-              availableCustomizations: {},
-            ),
-            selectedCustomizations: {},
-            quantity: 1,
+        allOrders.add(
+          Order(
+            items: [
+              CartItem(
+                product: Product(
+                  name: 'Espresso',
+                  basePrice: 25000,
+                  availableCustomizations: {},
+                ),
+                selectedCustomizations: {},
+                quantity: 1,
+              ),
+            ],
           ),
-        ]));
+        );
       }
 
       allOrders[0].toggleStatus();
       allOrders[1].toggleStatus();
       allOrders[2].toggleStatus();
 
-      final ongoing = allOrders.where((o) => o.status == OrderStatus.ongoing).length;
-      final history = allOrders.where((o) => o.status == OrderStatus.history).length;
+      final ongoing = allOrders
+          .where((o) => o.status == OrderStatus.ongoing)
+          .length;
+      final history = allOrders
+          .where((o) => o.status == OrderStatus.history)
+          .length;
 
       expect(ongoing, 2);
       expect(history, 3);

@@ -31,13 +31,21 @@ void main() {
 
     test('update phone', () {
       final profile = UserProfile(name: 'Test', email: 'a@b.com');
-      final updated = UserProfile(name: profile.name, email: profile.email, phone: '0987654321');
+      final updated = UserProfile(
+        name: profile.name,
+        email: profile.email,
+        phone: '0987654321',
+      );
       expect(updated.phone, '0987654321');
     });
 
     test('update avatar', () {
       final profile = UserProfile(name: 'Test', email: 'a@b.com');
-      final updated = UserProfile(name: profile.name, email: profile.email, avatarUrl: 'https://example.com/new.png');
+      final updated = UserProfile(
+        name: profile.name,
+        email: profile.email,
+        avatarUrl: 'https://example.com/new.png',
+      );
       expect(updated.avatarUrl, 'https://example.com/new.png');
     });
 

@@ -7,22 +7,28 @@ import 'package:the_code_cup/models/redeemable_item.dart';
 
 void main() {
   group('Transaction', () {
-    final order = Order(items: [
-      CartItem(
-        product: Product(
-          name: 'Espresso',
-          basePrice: 25000,
-          availableCustomizations: {},
+    final order = Order(
+      items: [
+        CartItem(
+          product: Product(
+            name: 'Espresso',
+            basePrice: 25000,
+            availableCustomizations: {},
+          ),
+          selectedCustomizations: {},
+          quantity: 1,
         ),
-        selectedCustomizations: {},
-        quantity: 1,
-      ),
-    ]);
+      ],
+    );
 
     final redeemableItem = RedeemableItem(name: 'Free Coffee', pointCost: 50);
 
     test('create earn transaction with amount and order', () {
-      final tx = Transaction(type: TransactionType.earn, amount: 50, order: order);
+      final tx = Transaction(
+        type: TransactionType.earn,
+        amount: 50,
+        order: order,
+      );
       expect(tx.type, TransactionType.earn);
       expect(tx.amount, 50);
       expect(tx.order, order);

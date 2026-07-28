@@ -1,17 +1,22 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:the_code_cup/constants/app_colors.dart';
-import 'package:the_code_cup/models/user_profile.dart';
-import 'package:the_code_cup/viewmodels/home_viewmodel.dart';
-import 'package:the_code_cup/widgets/app_shell.dart';
+import 'package:the_code_cup/viewmodels/profile_viewmodel.dart';
+import 'package:the_code_cup/viewmodels/ui_models.dart';
+import 'package:the_code_cup/widgets/app_chrome.dart';
+import 'package:the_code_cup/widgets/common_blocks.dart';
+
+enum _Field { name, phone, email, address }
 
 class ProfileScreen extends StatefulWidget {
-  final HomeViewModel viewModel;
+  final ProfileViewModel viewModel;
+  final ValueChanged<int> onTabSelected;
 
   const ProfileScreen({
     super.key,
     required this.viewModel,
+    required this.onTabSelected,
   });
 
   @override
@@ -19,14 +24,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int? _editingIndex;
-  late TextEditingController _controller;
-  late UserProfile _draft;
+  _Field? _editing;
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    _draft = widget.viewModel.userProfile;
     _controller = TextEditingController();
   }
 
@@ -36,252 +39,179 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  void _startEditing(int index, String currentValue) {
+  void _start(_Field field, String value) {
     setState(() {
-      _editingIndex = index;
-      _controller.text = currentValue;
+      _editing = field;
+      _controller.text = value;
       _controller.selection = TextSelection.fromPosition(
-        TextPosition(offset: currentValue.length),
+        TextPosition(offset: value.length),
       );
     });
   }
 
-  void _saveEdit() {
+  void _save() {
     final value = _controller.text.trim();
-    final error = widget.viewModel.updateProfileField(_editingIndex!, value);
+    final error = switch (_editing!) {
+      _Field.name => widget.viewModel.updateName(value),
+      _Field.phone => widget.viewModel.updatePhone(value),
+      _Field.email => widget.viewModel.updateEmail(value),
+      _Field.address => widget.viewModel.updateAddress(value),
+    };
     if (error != null) {
-      _showWarning(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
-    setState(() {
-      _draft = widget.viewModel.userProfile;
-      _editingIndex = null;
-    });
-  }
-
-  void _cancelEdit() {
-    setState(() => _editingIndex = null);
-  }
-
-  void _showWarning(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.orange,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    setState(() => _editing = null);
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.gallery);
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;
-    widget.viewModel.updateProfileField(4, file.path);
-    setState(() => _draft = widget.viewModel.userProfile);
+    final bytes = await file.readAsBytes();
+    widget.viewModel.updateAvatar(
+      'data:image/png;base64,${base64Encode(bytes)}',
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AppShell(
-      currentIndex: 3,
-      userProfile: widget.viewModel.userProfile,
-      appBar: AppBar(
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+    return ListenableBuilder(
+      listenable: widget.viewModel,
+      builder: (context, _) => ScreenTemplate(
+        appBar: createAppBar(),
+        navigationBar: createNavigationBar(onTabSelected: widget.onTabSelected),
+        body: createBody(
+          profile: widget.viewModel.profile,
+          editing: _editing,
+          controller: _controller,
+          onPickImage: _pickImage,
+          onStartEdit: _start,
+          onCancelEdit: () => setState(() => _editing = null),
+          onSave: _save,
         ),
-        centerTitle: true,
-        backgroundColor: AppColors.background,
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-        children: [
-          Center(
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 48,
-                    backgroundColor: AppColors.surface,
-                    backgroundImage: _draft.avatarUrl != null
-                        ? FileImage(File(_draft.avatarUrl!))
-                        : null,
-                    child: _draft.avatarUrl == null
-                        ? Text(
-                            _draft.name.isNotEmpty
-                                ? _draft.name[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.camera_alt,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildField(
-            index: 0,
-            icon: Icons.person_outline,
-            label: 'Full name',
-            value: _draft.name,
-          ),
-          const SizedBox(height: 24),
-          _buildField(
-            index: 1,
-            icon: Icons.phone_outlined,
-            label: 'Phone number',
-            value: _draft.phone ?? '',
-          ),
-          const SizedBox(height: 24),
-          _buildField(
-            index: 2,
-            icon: Icons.email_outlined,
-            label: 'Email',
-            value: _draft.email,
-          ),
-          const SizedBox(height: 24),
-          _buildField(
-            index: 3,
-            icon: Icons.location_on_outlined,
-            label: 'Address',
-            value: _draft.address ??
-                '3 Addersion Court, Chino Hills, HO56824, United State',
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildField({
-    required int index,
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    final isEditing = _editingIndex == index;
+  static PreferredSizeWidget createAppBar() =>
+      const AppAppBar(title: 'Profile');
 
-    if (isEditing) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppColors.textPrimary, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  static Widget createNavigationBar({
+    required ValueChanged<int> onTabSelected,
+  }) =>
+      AppBottomNav(currentIndex: 3, onTabSelected: onTabSelected);
+
+  static ImageProvider? avatarImage(ProfileUi profile) {
+    final url = profile.avatarUrl;
+    if (url == null) return null;
+    if (url.startsWith('data:')) {
+      return MemoryImage(base64Decode(url.split(',').last));
+    }
+    if (url.startsWith('blob:')) return null;
+    return NetworkImage(url);
+  }
+
+  static Widget createBody({
+    required ProfileUi profile,
+    required _Field? editing,
+    required TextEditingController controller,
+    required VoidCallback onPickImage,
+    required void Function(_Field field, String value) onStartEdit,
+    required VoidCallback onCancelEdit,
+    required VoidCallback onSave,
+  }) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      children: [
+        Center(
+          child: GestureDetector(
+            onTap: onPickImage,
+            child: Stack(
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                CircleAvatar(
+                  radius: 48,
+                  backgroundColor: AppColors.surface,
+                  backgroundImage: avatarImage(profile),
+                  child: profile.avatarUrl == null
+                      ? Text(
+                          profile.initial,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
                 ),
-                const SizedBox(height: 2),
-                TextField(
-                  controller: _controller,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          GestureDetector(
-            onTap: _cancelEdit,
-            child: const Icon(Icons.close, color: AppColors.textSecondary, size: 24),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: _saveEdit,
-            child: const Icon(Icons.check, color: AppColors.activeIcon, size: 24),
-          ),
-        ],
-      );
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: AppColors.textPrimary, size: 24),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+        const SizedBox(height: 24),
+        ProfileFieldRow(
+          icon: Icons.person_outline,
+          label: 'Full name',
+          value: profile.name,
+          isEditing: editing == _Field.name,
+          controller: controller,
+          onEdit: () => onStartEdit(_Field.name, profile.name),
+          onCancel: onCancelEdit,
+          onSave: onSave,
         ),
-        IconButton(
-          icon: const Icon(Icons.edit_outlined),
-          color: AppColors.textPrimary,
-          onPressed: () => _startEditing(index, value),
+        const SizedBox(height: 24),
+        ProfileFieldRow(
+          icon: Icons.phone_outlined,
+          label: 'Phone number',
+          value: profile.phone,
+          isEditing: editing == _Field.phone,
+          controller: controller,
+          onEdit: () => onStartEdit(_Field.phone, profile.phone),
+          onCancel: onCancelEdit,
+          onSave: onSave,
+        ),
+        const SizedBox(height: 24),
+        ProfileFieldRow(
+          icon: Icons.email_outlined,
+          label: 'Email',
+          value: profile.email,
+          isEditing: editing == _Field.email,
+          controller: controller,
+          onEdit: () => onStartEdit(_Field.email, profile.email),
+          onCancel: onCancelEdit,
+          onSave: onSave,
+        ),
+        const SizedBox(height: 24),
+        ProfileFieldRow(
+          icon: Icons.location_on_outlined,
+          label: 'Address',
+          value: profile.address,
+          isEditing: editing == _Field.address,
+          controller: controller,
+          onEdit: () => onStartEdit(_Field.address, profile.address),
+          onCancel: onCancelEdit,
+          onSave: onSave,
         ),
       ],
     );

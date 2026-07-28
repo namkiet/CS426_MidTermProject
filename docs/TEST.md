@@ -2,6 +2,8 @@
 
 Refer to [SPEC.md](SPEC.md) for the full specification this test suite covers.
 
+Files: `lib/utils/format.dart` — shared `formatPrice()` / `formatDate()` used by all screens.
+
 ---
 
 ## Unit Tests
@@ -110,20 +112,20 @@ UI tests cover user interactions with screen components in isolation. Each inter
 
 | Interaction | Tests |
 |---|---|
-| Add to Cart | Persist item with customizations; navigate to My Cart |
-| Cart Preview | Show overlay with current cart items |
+| Add to Cart | Persist item with customizations; SnackBar confirmation; navigate to My Cart |
+| Cart Preview | Navigate to My Cart screen |
 | Cart Item Removal | Swipe left removes item from list; total recalculated |
 | Checkout | Empty cart cannot checkout; cart cleared after successful checkout |
-| Order Toggle | Ongoing → history; history → ongoing |
-| Loyalty Card Reset | Reset only when stamps == 8; do nothing if stamps < 8 |
-| Points Redemption | Insufficient points → show error; sufficient points → deduct and record |
+| My Orders | Two-tab layout (Ongoing/History); swipe left toggles status; empty state |
+| Rewards | Points balance, Redeem button, loyalty card, empty transaction history |
+| Redeem Rewards | Product catalog with point costs; disabled button when insufficient; confirm dialog deducts points |
 | Profile Editing | Toggle edit mode; save changes; cancel discards changes |
 
 ---
 
 ## Integration Tests
 
-File: `tests/integration_test.dart`
+File: `tests/unit/integration_test.dart`
 
 Integration tests exercise real workflows spanning multiple entities without mocking:
 

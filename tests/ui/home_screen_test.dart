@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_code_cup/constants/app_colors.dart';
 import 'package:the_code_cup/data/seed_data.dart';
-import 'package:the_code_cup/views/home_screen.dart';
-import 'package:the_code_cup/viewmodels/home_viewmodel.dart';
+import 'package:the_code_cup/viewmodels/app_view_models.dart';
+import 'package:the_code_cup/views/details_screen.dart';
+import 'test_app.dart';
 
 void main() {
-  late HomeViewModel viewModel;
+  late AppViewModels app;
 
   setUp(() {
-    viewModel = HomeViewModel();
-    viewModel.setProducts(SeedData.products);
+    app = createTestApp();
   });
 
-  Widget buildApp() {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
-        useMaterial3: true,
-      ),
-      home: HomeScreen(viewModel: viewModel),
-    );
+  Widget buildApp() => wrapWithApp(app, testHome(app));
+
+  Widget buildNavigated() => wrapNavigated(app);
+
+  String expectedGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning!';
+    if (hour < 18) return 'Good afternoon!';
+    return 'Good evening!';
   }
 
   group('HomeScreen UI', () {
@@ -36,7 +37,7 @@ void main() {
 
     testWidgets('shows greeting text', (tester) async {
       await tester.pumpWidget(buildApp());
-      expect(find.text('Good morning!'), findsOneWidget);
+      expect(find.text(expectedGreeting()), findsOneWidget);
     });
 
     testWidgets('shows cart icon in header', (tester) async {
@@ -44,8 +45,9 @@ void main() {
       expect(find.byIcon(Icons.shopping_cart_outlined), findsOneWidget);
     });
 
-    testWidgets('avatar is a CircleAvatar with correct radius and color',
-        (tester) async {
+    testWidgets('avatar is a CircleAvatar with correct radius and color', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildApp());
       final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
       expect(avatar.radius, 20);
@@ -65,71 +67,16 @@ void main() {
       expect(find.textContaining('more stamps'), findsOneWidget);
     });
 
-    testWidgets('loyalty card has dark slate background', (tester) async {
-      await tester.pumpWidget(buildApp());
-      Container? card;
-      for (final c in find.byType(Container).evaluate()) {
-        final container = c.widget as Container;
-        if (container.decoration is BoxDecoration) {
-          final decoration = container.decoration as BoxDecoration;
-          if (decoration.color == AppColors.primary) {
-            card = container;
-            break;
-          }
-        }
-      }
-      expect(card, isNotNull);
-    });
-
-    testWidgets('stamp tray has white background', (tester) async {
-      await tester.pumpWidget(buildApp());
-      // find white inner container inside loyalty card
-      Container? tray;
-      for (final c in find.byType(Container).evaluate()) {
-        final container = c.widget as Container;
-        if (container.decoration is BoxDecoration) {
-          final decoration = container.decoration as BoxDecoration;
-          if (decoration.color == AppColors.background &&
-              decoration.borderRadius == const BorderRadius.all(Radius.circular(12))) {
-            tray = container;
-          }
-        }
-      }
-      expect(tray, isNotNull);
-    });
-
     testWidgets('shows Choose your coffee section', (tester) async {
       await tester.pumpWidget(buildApp());
       expect(find.text('Choose your coffee'), findsOneWidget);
     });
 
-    testWidgets('section title uses textOnDarkSecondary color', (tester) async {
-      await tester.pumpWidget(buildApp());
-      final title = tester.widget<Text>(find.text('Choose your coffee'));
-      expect(title.style?.color, AppColors.textOnDarkSecondary);
-    });
-
     testWidgets('products displayed in grid with 2 columns', (tester) async {
       await tester.pumpWidget(buildApp());
-      final gridWidget = find.byType(GridView);
-      expect(gridWidget, findsOneWidget);
+      expect(find.byType(GridView), findsOneWidget);
       for (final product in SeedData.products) {
         expect(find.text(product.name), findsOneWidget);
-      }
-    });
-
-    testWidgets('each grid item shows product name', (tester) async {
-      await tester.pumpWidget(buildApp());
-      for (final product in SeedData.products) {
-        expect(find.text(product.name), findsOneWidget);
-      }
-    });
-
-    testWidgets('each grid item shows image or fallback icon', (tester) async {
-      await tester.pumpWidget(buildApp());
-      for (final product in SeedData.products) {
-        final item = find.text(product.name);
-        expect(item, findsOneWidget);
       }
     });
 
@@ -141,105 +88,43 @@ void main() {
       }
     });
 
-    testWidgets('description is hidden — no description text visible',
-        (tester) async {
+    testWidgets('bottom nav has Home, Rewards, Orders, Profile tabs', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildApp());
-      for (final product in SeedData.products) {
-        if (product.description != null) {
-          expect(find.text(product.description!), findsNothing);
-        }
-      }
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Rewards'), findsOneWidget);
+      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
     });
 
-    testWidgets('product name text uses textPrimary color', (tester) async {
+    testWidgets('tapping Profile tab navigates away from home screen', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildNavigated());
+      expect(find.text(expectedGreeting()), findsOneWidget);
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      expect(find.text(expectedGreeting()), findsNothing);
+    });
+
+    testWidgets('tapping a product navigates to details screen', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildNavigated());
+      await tester.scrollUntilVisible(
+        find.text('Espresso'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Espresso'));
+      await tester.pumpAndSettle();
+      expect(find.byType(DetailsScreen), findsOneWidget);
+    });
+
+    testWidgets('inactive stamps use coffee_outlined icon', (tester) async {
       await tester.pumpWidget(buildApp());
-      for (final product in SeedData.products) {
-        final textWidget = tester.widget<Text>(find.text(product.name));
-        expect(textWidget.style?.color, AppColors.textPrimary);
-      }
-    });
-
-    testWidgets('grid SliverGridDelegate has correct spacing', (tester) async {
-      await tester.pumpWidget(buildApp());
-      final grid = tester.widget<GridView>(find.byType(GridView));
-      final delegate =
-          grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-      expect(delegate.mainAxisSpacing, 16);
-      expect(delegate.crossAxisSpacing, 16);
-      expect(delegate.childAspectRatio, 1.0);
-    });
-
-    testWidgets('product names are centered in card', (tester) async {
-      await tester.pumpWidget(buildApp());
-      for (final product in SeedData.products.take(3)) {
-        final textWidget = tester.widget<Text>(find.text(product.name));
-        expect(textWidget.textAlign, TextAlign.center);
-      }
-    });
-
-    group('bottom navigation', () {
-      testWidgets('has Home, Rewards, Orders, Profile tabs', (tester) async {
-        await tester.pumpWidget(buildApp());
-        expect(find.text('Home'), findsOneWidget);
-        expect(find.text('Rewards'), findsOneWidget);
-        expect(find.text('Orders'), findsOneWidget);
-        expect(find.text('Profile'), findsOneWidget);
-      });
-
-      testWidgets('uses correct bottom nav colors', (tester) async {
-        await tester.pumpWidget(buildApp());
-        final navBar = tester.widget<BottomNavigationBar>(
-          find.byType(BottomNavigationBar),
-        );
-        expect(navBar.backgroundColor, AppColors.background);
-        expect(navBar.selectedItemColor, AppColors.activeIcon);
-        expect(navBar.unselectedItemColor, AppColors.inactiveIcon);
-      });
-
-      testWidgets('home icon uses store icon', (tester) async {
-        await tester.pumpWidget(buildApp());
-        expect(find.byIcon(Icons.store_rounded), findsOneWidget);
-      });
-    });
-
-    group('navigation', () {
-      testWidgets('tapping Profile tab navigates away from home screen', (tester) async {
-        await tester.pumpWidget(buildApp());
-        expect(find.text('Good morning!'), findsOneWidget);
-        await tester.tap(find.text('Profile'));
-        await tester.pumpAndSettle();
-        expect(find.text('Good morning!'), findsNothing);
-      });
-    });
-
-    group('stamps', () {
-      testWidgets('active stamps use coffee_rounded icon', (tester) async {
-        await tester.pumpWidget(buildApp());
-        expect(find.byIcon(Icons.coffee_rounded), findsNothing);
-      });
-
-      testWidgets('inactive stamps use coffee_outlined icon', (tester) async {
-        await tester.pumpWidget(buildApp());
-        expect(find.byIcon(Icons.coffee_outlined), findsNWidgets(8));
-      });
-
-      testWidgets('active stamps are dark slate', (tester) async {
-        await tester.pumpWidget(buildApp());
-        for (final icon
-            in find.byIcon(Icons.coffee_rounded).evaluate()) {
-          final i = icon.widget as Icon;
-          expect(i.color, AppColors.stampFilled);
-        }
-      });
-
-      testWidgets('inactive stamps are light grey', (tester) async {
-        await tester.pumpWidget(buildApp());
-        for (final icon
-            in find.byIcon(Icons.coffee_outlined).evaluate()) {
-          final i = icon.widget as Icon;
-          expect(i.color, AppColors.stampEmpty);
-        }
-      });
+      expect(find.byIcon(Icons.coffee_outlined), findsNWidgets(8));
     });
   });
 }

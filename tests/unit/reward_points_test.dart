@@ -8,14 +8,28 @@ import 'package:the_code_cup/models/transaction.dart';
 
 void main() {
   group('RewardPoints', () {
-    final espresso = Product(name: 'Espresso', basePrice: 25000, availableCustomizations: {});
-    final item = CartItem(product: espresso, selectedCustomizations: {}, quantity: 1);
+    final espresso = Product(
+      name: 'Espresso',
+      basePrice: 25000,
+      availableCustomizations: {},
+    );
+    final item = CartItem(
+      product: espresso,
+      selectedCustomizations: {},
+      quantity: 1,
+    );
     final freeCoffee = RedeemableItem(name: 'Free Coffee', pointCost: 50);
     final muffin = RedeemableItem(name: 'Muffin', pointCost: 25);
 
-    Order makeOrder({int quantity = 1}) => Order(items: [
-      CartItem(product: espresso, selectedCustomizations: {}, quantity: quantity),
-    ]);
+    Order makeOrder({int quantity = 1}) => Order(
+      items: [
+        CartItem(
+          product: espresso,
+          selectedCustomizations: {},
+          quantity: quantity,
+        ),
+      ],
+    );
 
     test('start with balance 0', () {
       final rp = RewardPoints();
@@ -47,7 +61,10 @@ void main() {
       rp.award(100, order: makeOrder());
       rp.redeem(30, redeemableItem: freeCoffee);
       rp.redeem(20, redeemableItem: muffin);
-      expect(rp.transactions.where((t) => t.type == TransactionType.redeem).length, 2);
+      expect(
+        rp.transactions.where((t) => t.type == TransactionType.redeem).length,
+        2,
+      );
     });
 
     test('verify transaction amounts are recorded correctly', () {
@@ -69,10 +86,7 @@ void main() {
     test('reject redeem with insufficient balance', () {
       final rp = RewardPoints();
       rp.award(10, order: makeOrder());
-      expect(
-        () => rp.redeem(20, redeemableItem: freeCoffee),
-        throwsStateError,
-      );
+      expect(() => rp.redeem(20, redeemableItem: freeCoffee), throwsStateError);
       expect(rp.balance, 10);
     });
 

@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:the_code_cup/models/cart_item.dart';
-import 'package:the_code_cup/models/loyalty_card.dart';
 import 'package:the_code_cup/models/order.dart';
 import 'package:the_code_cup/models/reward_points.dart';
 import 'package:the_code_cup/models/user_profile.dart';
@@ -38,8 +37,7 @@ class LocalStorage {
   // ── Orders ──
 
   static Future<void> saveOrders(List<Order> orders) async {
-    await _box.put('orders',
-        orders.map((o) => o.toJson()).toList());
+    await _box.put('orders', orders.map((o) => o.toJson()).toList());
   }
 
   static List<Order> loadOrders() {
@@ -65,8 +63,7 @@ class LocalStorage {
   // ── Cart Items ──
 
   static Future<void> saveCartItems(List<CartItem> items) async {
-    await _box.put('cartItems',
-        items.map((i) => i.toJson()).toList());
+    await _box.put('cartItems', items.map((i) => i.toJson()).toList());
   }
 
   static List<CartItem> loadCartItems() {

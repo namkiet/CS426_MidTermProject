@@ -59,10 +59,7 @@ void main() {
     });
 
     test('reject order with empty items list', () {
-      expect(
-        () => Order(items: []),
-        throwsAssertionError,
-      );
+      expect(() => Order(items: []), throwsAssertionError);
     });
 
     test('toggle already-history order is idempotent', () {

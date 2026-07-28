@@ -13,12 +13,13 @@ class Order {
     required this.items,
     this.status = OrderStatus.ongoing,
     DateTime? createdAt,
-  })  : id = id ?? _generateId(),
-        assert(items.isNotEmpty),
-        createdAt = createdAt ?? DateTime.now();
+  }) : id = id ?? _generateId(),
+       assert(items.isNotEmpty),
+       createdAt = createdAt ?? DateTime.now();
 
-  static int _counter = 0;
-  static String _generateId() => 'ORD-${++_counter}';
+  // ponytail: timestamp ids avoid restart collisions; UUID if you need offline uniqueness
+  static String _generateId() =>
+      'ORD-${DateTime.now().millisecondsSinceEpoch}';
 
   double calculateTotalPrice() {
     return items.fold(0.0, (sum, item) => sum + item.calculateSubtotal());
@@ -29,24 +30,26 @@ class Order {
   }
 
   void toggleStatus() {
-    status =
-        status == OrderStatus.ongoing ? OrderStatus.history : OrderStatus.ongoing;
+    status = status == OrderStatus.ongoing
+        ? OrderStatus.history
+        : OrderStatus.ongoing;
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'items': items.map((e) => e.toJson()).toList(),
-        'status': status.name,
-        'createdAt': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'items': items.map((e) => e.toJson()).toList(),
+    'status': status.name,
+    'createdAt': createdAt.toIso8601String(),
+  };
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
-        id: json['id'] as String,
-        items: (json['items'] as List<dynamic>)
-            .map((e) => CartItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        status: OrderStatus.values.firstWhere(
-            (s) => s.name == json['status'] as String),
-        createdAt: DateTime.parse(json['createdAt'] as String),
-      );
+    id: json['id'] as String,
+    items: (json['items'] as List<dynamic>)
+        .map((e) => CartItem.fromJson(Map<String, dynamic>.from(e)))
+        .toList(),
+    status: OrderStatus.values.firstWhere(
+      (s) => s.name == json['status'] as String,
+    ),
+    createdAt: DateTime.parse(json['createdAt'] as String),
+  );
 }

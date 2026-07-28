@@ -1,13 +1,14 @@
 import 'package:the_code_cup/models/product.dart';
-import 'package:the_code_cup/models/user_profile.dart';
-import 'package:the_code_cup/models/loyalty_card.dart';
 import 'package:the_code_cup/models/redeemable_item.dart';
+import 'package:the_code_cup/models/user_profile.dart';
 
+/// Immutable catalog + first-launch defaults. Never mutate at runtime.
 class SeedData {
   SeedData._();
 
-  static final List<Product> products = [
+  static final List<Product> products = List.unmodifiable([
     Product(
+      id: 'espresso',
       name: 'Espresso',
       description: 'Strong and bold classic espresso shot',
       basePrice: 25000,
@@ -20,6 +21,7 @@ class SeedData {
       },
     ),
     Product(
+      id: 'latte',
       name: 'Latte',
       description: 'Smooth espresso with steamed milk',
       basePrice: 35000,
@@ -31,6 +33,7 @@ class SeedData {
       },
     ),
     Product(
+      id: 'cappuccino',
       name: 'Cappuccino',
       description: 'Espresso with foamy milk topping',
       basePrice: 30000,
@@ -43,6 +46,7 @@ class SeedData {
       },
     ),
     Product(
+      id: 'americano',
       name: 'Americano',
       description: 'Espresso diluted with hot water',
       basePrice: 28000,
@@ -55,6 +59,7 @@ class SeedData {
       },
     ),
     Product(
+      id: 'mocha',
       name: 'Mocha',
       description: 'Espresso with chocolate and milk',
       basePrice: 40000,
@@ -67,6 +72,7 @@ class SeedData {
       },
     ),
     Product(
+      id: 'flat-white',
       name: 'Flat White',
       description: 'Smooth espresso with velvety milk',
       basePrice: 38000,
@@ -77,20 +83,25 @@ class SeedData {
         'ice': {'Hot': 0.0, 'Iced': 0.0},
       },
     ),
-  ];
+  ]);
 
-  static UserProfile userProfile = UserProfile(
+  static final List<RedeemableItem> redeemableItems = List.unmodifiable([
+    RedeemableItem(id: 'free-espresso', name: 'Free Espresso', pointCost: 50),
+    RedeemableItem(id: 'free-latte', name: 'Free Latte', pointCost: 70),
+    RedeemableItem(id: 'coffee-mug', name: 'Coffee Mug', pointCost: 150),
+    RedeemableItem(
+      id: 'coffee-beans',
+      name: 'Coffee Beans (500g)',
+      pointCost: 300,
+    ),
+  ]);
+
+  /// First-launch template only — copy into repository, do not mutate.
+  static UserProfile get defaultProfile => UserProfile(
     name: 'Nam Kiet',
     email: 'namkiet@example.com',
     phone: '0912345678',
   );
 
-  static LoyaltyCard loyaltyCard = LoyaltyCard(stampCount: 0);
-
-  static final List<RedeemableItem> redeemableItems = [
-    RedeemableItem(name: 'Free Espresso', pointCost: 50),
-    RedeemableItem(name: 'Free Latte', pointCost: 70),
-    RedeemableItem(name: 'Coffee Mug', pointCost: 150),
-    RedeemableItem(name: 'Coffee Beans (500g)', pointCost: 300),
-  ];
+  static const int defaultStampCount = 0;
 }

@@ -13,9 +13,9 @@ class Product {
     this.description,
     this.imageUrl,
     required this.availableCustomizations,
-  })  : id = id ?? _generateId(name),
-        assert(name.isNotEmpty),
-        assert(basePrice > 0);
+  }) : id = id ?? _generateId(name),
+       assert(name.isNotEmpty),
+       assert(basePrice > 0);
 
   static String _generateId(String name) =>
       '${name.toLowerCase().replaceAll(RegExp(r'\s+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';
@@ -29,26 +29,28 @@ class Product {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'basePrice': basePrice,
-        'imageUrl': imageUrl,
-        'availableCustomizations': availableCustomizations,
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'basePrice': basePrice,
+    'imageUrl': imageUrl,
+    'availableCustomizations': availableCustomizations,
+  };
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        basePrice: (json['basePrice'] as num).toDouble(),
-        description: json['description'] as String?,
-        imageUrl: json['imageUrl'] as String?,
-        availableCustomizations:
-            (json['availableCustomizations'] as Map<String, dynamic>)
-                .map((k, v) => MapEntry(
-                      k,
-                      (v as Map<String, dynamic>)
-                          .map((k2, v2) => MapEntry(k2, (v2 as num).toDouble())),
-                    )),
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    basePrice: (json['basePrice'] as num).toDouble(),
+    description: json['description'] as String?,
+    imageUrl: json['imageUrl'] as String?,
+    availableCustomizations:
+        Map<String, dynamic>.from(json['availableCustomizations']).map(
+          (k, v) => MapEntry(
+            k,
+            Map<String, dynamic>.from(v).map(
+              (k2, v2) => MapEntry(k2, (v2 as num).toDouble()),
+            ),
+          ),
+        ),
+  );
 }

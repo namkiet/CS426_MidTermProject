@@ -1,44 +1,72 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:the_code_cup/data/seed_data.dart';
-import 'package:the_code_cup/models/user_profile.dart';
-import 'package:the_code_cup/views/rewards_screen.dart';
+import 'package:hive/hive.dart';
+import 'package:the_code_cup/viewmodels/app_view_models.dart';
+import 'package:the_code_cup/views/redeem_rewards_screen.dart';
+import 'test_app.dart';
 
 void main() {
-  late UserProfile userProfile;
+  late AppViewModels app;
 
-  setUp(() {
-    userProfile = SeedData.userProfile;
+  setUp(() async {
+    Hive.init(
+      '${Directory.systemTemp.path}/rewards_test_${DateTime.now().microsecondsSinceEpoch}',
+    );
+    await Hive.openBox('the_code_cup');
+    app = createTestApp();
   });
 
-  Widget buildApp() {
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
-        useMaterial3: true,
-      ),
-      home: RewardsScreen(userProfile: userProfile),
-    );
-  }
+  Widget buildApp() => wrapWithApp(app, testRewards(app));
 
-  group('RewardsScreen bottom navigation bar', () {
-    testWidgets('shows bottom nav with Home, Rewards, Orders, Profile tabs',
-        (tester) async {
+  group('RewardsScreen', () {
+    testWidgets('shows bottom nav with 4 tabs', (tester) async {
       await tester.pumpWidget(buildApp());
       final navBar = find.byType(BottomNavigationBar);
       expect(navBar, findsOneWidget);
-      final items =
-          (tester.widget(navBar) as BottomNavigationBar).items;
+      final items = (tester.widget(navBar) as BottomNavigationBar).items;
       expect(items[0].label, 'Home');
       expect(items[1].label, 'Rewards');
       expect(items[2].label, 'Orders');
       expect(items[3].label, 'Profile');
     });
 
-    testWidgets('rewards icon uses card_giftcard icon in bottom nav',
-        (tester) async {
+    testWidgets('shows points balance', (tester) async {
       await tester.pumpWidget(buildApp());
-      expect(find.byIcon(Icons.card_giftcard_rounded), findsOneWidget);
+      expect(find.text('0'), findsOneWidget);
+      expect(find.text('Points Balance'), findsOneWidget);
+    });
+
+    testWidgets('shows Redeem button', (tester) async {
+      await tester.pumpWidget(buildApp());
+      expect(find.text('Redeem'), findsOneWidget);
+    });
+
+    testWidgets('shows loyalty card', (tester) async {
+      await tester.pumpWidget(buildApp());
+      expect(find.text('Loyalty Card'), findsOneWidget);
+    });
+
+    testWidgets('shows empty transactions state', (tester) async {
+      await tester.pumpWidget(buildApp());
+      expect(find.text('No transactions yet'), findsOneWidget);
+    });
+  });
+
+  group('RedeemRewardsScreen', () {
+    testWidgets('tapping a redeemable item shows confirmation dialog', (
+      tester,
+    ) async {
+      app.repo.rewardPoints.award(500);
+
+      await tester.pumpWidget(
+        wrapWithApp(app, RedeemRewardsScreen(viewModel: app.rewards)),
+      );
+
+      await tester.tap(find.text('Free Espresso'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Confirm Redemption'), findsOneWidget);
     });
   });
 }

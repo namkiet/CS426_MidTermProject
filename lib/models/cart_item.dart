@@ -16,16 +16,17 @@ class CartItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'product': product.toJson(),
-        'selectedCustomizations': selectedCustomizations,
-        'quantity': quantity,
-      };
+    'product': product.toJson(),
+    'selectedCustomizations': selectedCustomizations,
+    'quantity': quantity,
+  };
 
   factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
-        product: Product.fromJson(json['product'] as Map<String, dynamic>),
-        selectedCustomizations:
-            (json['selectedCustomizations'] as Map<String, dynamic>)
-                .map((k, v) => MapEntry(k, v as String)),
-        quantity: json['quantity'] as int,
-      );
+    product: Product.fromJson(Map<String, dynamic>.from(json['product'])),
+    selectedCustomizations:
+        (Map<String, dynamic>.from(json['selectedCustomizations'])).map(
+          (k, v) => MapEntry(k, v as String),
+        ),
+    quantity: json['quantity'] as int,
+  );
 }
