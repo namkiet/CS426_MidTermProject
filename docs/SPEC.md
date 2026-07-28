@@ -9,11 +9,11 @@
    - **Interaction:** Click "Coffee ListItem": Navigate to Details screen
 
 **2. Details Screen**
-   - **UI:** Product Customization controls (shot, size, ice); Cart Preview overlay
+   - **UI:** Product Customization controls (shot, size, ice)
    - **Logic:** Dynamic Price Calculation: Total updates in real-time on quantity/options change
    - **Interaction:**
-     - Click "Cart Icon": Show Cart Preview overlay
-     - Click "Add to Cart Button": Persist item & navigate to My Cart
+     - Click "Cart Icon": Navigate to My Cart screen
+     - Click "Add to Cart Button": Persist item, stay on Details screen, and show a confirmation notification
      - Click "Back Button": Return to Home Screen
 
 **3. My Cart Screen**
@@ -58,6 +58,7 @@
 ### General
 
 **1.** State & Lifecycle Management (handle pause/resume/stop, preserve data across config changes)
+   - Persist runtime state when the app becomes non-interactive or not visible, including Flutter lifecycle states such as `paused`, `inactive`, `detached`, and `hidden`
 **2.** Data Persistence & Seeding (SharedPreferences / Room / SQLite + initial seed data)
 **3.** User-Defined Features (novel features beyond the document)
 **4.** Code Quality, Report & Demo

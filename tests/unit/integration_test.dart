@@ -1,7 +1,7 @@
-/// Integration tests verifying the interaction between multiple entities.
-///
-/// These tests exercise real workflows that span multiple models, without
-/// mocking individual dependencies. For full end-to-end scenarios see E2E tests.
+// Integration tests verifying the interaction between multiple entities.
+//
+// These tests exercise real workflows that span multiple models, without
+// mocking individual dependencies. For full end-to-end scenarios see E2E tests.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_code_cup/models/product.dart';
 import 'package:the_code_cup/models/cart_item.dart';

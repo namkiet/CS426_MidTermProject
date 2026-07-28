@@ -13,11 +13,6 @@ void main() {
       basePrice: 25000,
       availableCustomizations: {},
     );
-    final item = CartItem(
-      product: espresso,
-      selectedCustomizations: {},
-      quantity: 1,
-    );
     final freeCoffee = RedeemableItem(name: 'Free Coffee', pointCost: 50);
     final muffin = RedeemableItem(name: 'Muffin', pointCost: 25);
 

@@ -40,19 +40,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Best-effort persistence/reload for lifecycle transitions.
+    // Best-effort lifecycle persistence. Runtime changes already persist on
+    // mutation, so resume does not force a reload.
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
         widget.vms.repo.persistAll();
         break;
       case AppLifecycleState.resumed:
-        widget.vms.repo.loadPersisted();
-        break;
-      case AppLifecycleState.hidden:
-        // "hidden" is used on some platforms. Persist as well.
-        widget.vms.repo.persistAll();
         break;
     }
   }
