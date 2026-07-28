@@ -16,9 +16,9 @@ class ProfileViewModel extends RepoViewModel {
     );
   }
 
-  String? updateName(String value) => repo.updateName(value);
-  String? updatePhone(String value) => repo.updatePhone(value);
-  String? updateEmail(String value) => repo.updateEmail(value);
-  String? updateAddress(String value) => repo.updateAddress(value);
-  String? updateAvatar(String value) => repo.updateAvatar(value);
+  Future<String?> updateName(String value) => repo.updateName(value);
+  Future<String?> updatePhone(String value) => repo.updatePhone(value);
+  Future<String?> updateEmail(String value) => repo.updateEmail(value);
+  Future<String?> updateAddress(String value) => repo.updateAddress(value);
+  Future<String?> updateAvatar(String value) => repo.updateAvatar(value);
 }

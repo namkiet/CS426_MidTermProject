@@ -89,7 +89,7 @@ void main() {
       final rp = RewardPoints();
       expect(
         () => rp.redeem(0, redeemableItem: freeCoffee),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
@@ -97,7 +97,7 @@ void main() {
       final rp = RewardPoints();
       expect(
         () => rp.redeem(-5, redeemableItem: freeCoffee),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
   });

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:the_code_cup/constants/app_colors.dart';
 import 'package:the_code_cup/navigation/app_navigator.dart';
@@ -35,6 +37,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    widget.vms.dispose();
     super.dispose();
   }
 
@@ -47,7 +50,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        widget.vms.repo.persistAll();
+        unawaited(widget.vms.repo.persistAll());
         break;
       case AppLifecycleState.resumed:
         break;

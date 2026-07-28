@@ -49,14 +49,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void _save() {
+  Future<void> _save() async {
     final value = _controller.text.trim();
-    final error = switch (_editing!) {
+    final editing = _editing;
+    if (editing == null) return;
+    final error = await switch (editing) {
       _Field.name => widget.viewModel.updateName(value),
       _Field.phone => widget.viewModel.updatePhone(value),
       _Field.email => widget.viewModel.updateEmail(value),
       _Field.address => widget.viewModel.updateAddress(value),
     };
+    if (!mounted) return;
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -74,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;
     final bytes = await file.readAsBytes();
-    widget.viewModel.updateAvatar(
+    await widget.viewModel.updateAvatar(
       'data:image/png;base64,${base64Encode(bytes)}',
     );
   }

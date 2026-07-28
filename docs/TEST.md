@@ -125,7 +125,7 @@ UI tests cover user interactions with screen components in isolation. Each inter
 
 ## Integration Tests
 
-File: `tests/unit/integration_test.dart`
+File: `test/unit/integration_test.dart`
 
 Integration tests exercise real workflows spanning multiple entities without mocking:
 

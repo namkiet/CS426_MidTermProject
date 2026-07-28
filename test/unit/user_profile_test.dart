@@ -52,14 +52,14 @@ void main() {
     test('reject empty name', () {
       expect(
         () => UserProfile(name: '', email: 'a@b.com'),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
     test('reject invalid email', () {
       expect(
         () => UserProfile(name: 'Test', email: 'not-an-email'),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
@@ -83,21 +83,21 @@ void main() {
     test('reject phone shorter than 10 digits', () {
       expect(
         () => UserProfile(name: 'A', email: 'a@b.com', phone: '091234567'),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
     test('reject phone longer than 10 digits', () {
       expect(
         () => UserProfile(name: 'A', email: 'a@b.com', phone: '09123456789'),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
     test('reject phone not starting with 0', () {
       expect(
         () => UserProfile(name: 'A', email: 'a@b.com', phone: '1912345678'),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 

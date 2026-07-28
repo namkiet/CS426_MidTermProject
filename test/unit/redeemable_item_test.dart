@@ -22,14 +22,14 @@ void main() {
     test('reject zero point cost', () {
       expect(
         () => RedeemableItem(name: 'Free Coffee', pointCost: 0),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
     test('reject negative point cost', () {
       expect(
         () => RedeemableItem(name: 'Free Coffee', pointCost: -10),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
   });

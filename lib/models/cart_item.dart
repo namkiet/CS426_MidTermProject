@@ -9,7 +9,11 @@ class CartItem {
     required this.product,
     required this.selectedCustomizations,
     required this.quantity,
-  }) : assert(quantity >= 1);
+  }) {
+    if (quantity < 1) {
+      throw ArgumentError.value(quantity, 'quantity', 'Must be at least 1');
+    }
+  }
 
   double calculateSubtotal() {
     return product.calculateUnitPrice(selectedCustomizations) * quantity;

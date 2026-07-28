@@ -31,5 +31,6 @@ class AppViewModels {
     orders.dispose();
     rewards.dispose();
     profile.dispose();
+    repo.dispose();
   }
 }

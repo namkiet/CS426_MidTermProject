@@ -1,0 +1,46 @@
+\section{Architecture}
+
+The application follows the \textbf{Model--View--ViewModel (MVVM)} pattern with manual dependency injection (no DI framework).
+
+\subsection{Layer Diagram}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, minimum width=5cm, minimum height=1cm,
+              align=center, font=\small\sffamily},
+  arr/.style={-{Stealth[length=3mm]}, thick},
+  node distance=1.2cm
+]
+  \node[box, fill=blue!15]   (view)  {Views (Screens \& Widgets)};
+  \node[box, fill=orange!15, below=of view] (vm)    {ViewModels (ChangeNotifier)};
+  \node[box, fill=green!15,  below=of vm]   (model) {Models (Domain Entities)};
+  \node[box, fill=purple!15, below=of model](repo)  {Repository / Services};
+  \node[box, fill=gray!15,   below=of repo] (store) {SharedPreferences};
+
+  \draw[arr] (view)  -- node[right, font=\scriptsize]{listens to} (vm);
+  \draw[arr] (vm)    -- node[right, font=\scriptsize]{operates on} (model);
+  \draw[arr] (vm)    -- node[right, font=\scriptsize]{reads/writes} (repo);
+  \draw[arr] (repo)  -- node[right, font=\scriptsize]{persists via} (store);
+\end{tikzpicture}
+\caption{MVVM architecture layers}
+\end{figure}
+
+\subsection{Layer Responsibilities}
+
+\begin{description}[style=nextline]
+  \item[Models (\texttt{lib/models/})]
+    Pure Dart domain entities with no framework dependencies. Business logic lives in entity methods (e.g.\ \texttt{Order.calculatePointsEarned()}, \texttt{CartItem.calculateSubtotal()}). Constructors use \texttt{assert} for invariant validation.
+
+  \item[ViewModels (\texttt{lib/viewmodels/})]
+    State holders extending \texttt{ChangeNotifier}. Each screen has a corresponding ViewModel that manages its state and exposes methods for user actions. ViewModels are manually wired in \texttt{main.dart} and passed as constructor parameters.
+
+  \item[Views (\texttt{lib/views/})]
+    \texttt{StatelessWidget} screens that receive their ViewModel via constructor injection. Navigation uses raw \texttt{Navigator.push}.
+
+  \item[Repository (\texttt{lib/repositories/})]
+    \texttt{AppRepository} aggregates all ViewModels and coordinates cross-cutting concerns (e.g.\ awarding stamps and points after checkout).
+
+  \item[Services (\texttt{lib/services/})]
+    \texttt{LocalStorage} wraps \texttt{SharedPreferences} for persisting user profile data and loyalty stamp count.
+\end{description}

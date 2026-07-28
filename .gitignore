@@ -60,3 +60,14 @@ web/icons/
 .agents/
 .claude/
 skills-lock.json
+
+# LaTeX / Mermaid report build artifacts
+report/*.aux
+report/*.out
+report/*.toc
+report/*.lof
+report/*.lot
+report/mermaid/
+
+# Node (for mermaid-cli)
+node_modules/

@@ -36,8 +36,9 @@ class _OrdersScreenState extends State<OrdersScreen>
     super.dispose();
   }
 
-  void _toggle(String orderId) {
-    final message = widget.viewModel.toggleStatus(orderId);
+  Future<void> _toggle(String orderId) async {
+    final message = await widget.viewModel.toggleStatus(orderId);
+    if (!mounted) return;
     if (message.isEmpty) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 1)),
@@ -55,7 +56,9 @@ class _OrdersScreenState extends State<OrdersScreen>
           tabController: _tabController,
           ongoing: widget.viewModel.ongoing,
           history: widget.viewModel.history,
-          onToggle: _toggle,
+          onToggle: (orderId) {
+            _toggle(orderId);
+          },
         ),
       ),
     );

@@ -13,9 +13,14 @@ class Product {
     this.description,
     this.imageUrl,
     required this.availableCustomizations,
-  }) : id = id ?? _generateId(name),
-       assert(name.isNotEmpty),
-       assert(basePrice > 0);
+  }) : id = id ?? _generateId(name) {
+    if (name.isEmpty) {
+      throw ArgumentError.value(name, 'name', 'Must not be empty');
+    }
+    if (basePrice <= 0) {
+      throw ArgumentError.value(basePrice, 'basePrice', 'Must be positive');
+    }
+  }
 
   static String _generateId(String name) =>
       '${name.toLowerCase().replaceAll(RegExp(r'\s+'), '-')}-${DateTime.now().millisecondsSinceEpoch}';

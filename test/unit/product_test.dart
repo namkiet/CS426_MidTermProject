@@ -52,7 +52,7 @@ void main() {
           basePrice: 0,
           availableCustomizations: validCustomizations,
         ),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
@@ -63,7 +63,7 @@ void main() {
           basePrice: -1000,
           availableCustomizations: validCustomizations,
         ),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
@@ -74,7 +74,7 @@ void main() {
           basePrice: 25000,
           availableCustomizations: validCustomizations,
         ),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 

@@ -37,8 +37,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
     _selections = Map.from(_details?.defaultSelections ?? {});
   }
 
-  void _addToCart(VoidCallback onAdded) {
-    widget.cart.addToCart(widget.productId, _selections, _quantity);
+  Future<void> _addToCart(VoidCallback onAdded) async {
+    await widget.cart.addToCart(widget.productId, _selections, _quantity);
     onAdded();
   }
 
@@ -62,14 +62,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
             _selections,
             _quantity,
           ),
-          onAddToCart: () => _addToCart(() {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Added to cart'),
-                duration: Duration(seconds: 1),
-              ),
-            );
-          }),
+          onAddToCart: () async {
+            await _addToCart(() {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Added to cart'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            });
+          },
         ),
         body: createBody(
           details: details,

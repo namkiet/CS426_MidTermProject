@@ -14,8 +14,11 @@ class Order {
     this.status = OrderStatus.ongoing,
     DateTime? createdAt,
   }) : id = id ?? _generateId(),
-       assert(items.isNotEmpty),
-       createdAt = createdAt ?? DateTime.now();
+       createdAt = createdAt ?? DateTime.now() {
+    if (items.isEmpty) {
+      throw ArgumentError.value(items, 'items', 'Must not be empty');
+    }
+  }
 
   // ponytail: timestamp ids avoid restart collisions; UUID if you need offline uniqueness
   static String _generateId() =>

@@ -1,0 +1,604 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{parskip}
+\usepackage{amsmath}
+\usepackage[Renderer={npx @mermaid-js/mermaid-cli}]{mermaid}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+  citecolor=blue!60!black,
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  backgroundcolor=\color{gray!5},
+  keywordstyle=\color{blue!70},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red!60!black},
+}
+
+% ── Title ─────────────────────────────────────────────────
+\title{%
+  \textbf{The Code Cup} \\[0.3em]
+  \large CS426 --- Mobile Device Application Development \\
+  Midterm Project Report
+}
+\author{
+  Trinh Vo Nam Kiet \\
+  Student ID: 24125013 \\
+  Class: APCS 24A01
+}
+\date{\today}
+
+% ══════════════════════════════════════════════════════════
+\begin{document}
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════
+\section{Introduction}
+
+\textbf{The Code Cup} is a mobile coffee shop application built with Flutter, targeting Android. Users can browse a coffee menu, customize and order drinks, collect loyalty stamps, earn and redeem reward points, and manage their profile.
+
+\subsection{Technology Stack}
+
+\begin{itemize}[nosep]
+  \item \textbf{Framework:} Flutter (Dart)
+  \item \textbf{Target platform:} Android
+  \item \textbf{Architecture:} MVVM (Model--View--ViewModel)
+  \item \textbf{State management:} \texttt{ChangeNotifier}
+  \item \textbf{Persistence:} \texttt{Hive}
+  \item \textbf{Testing:} \texttt{flutter\_test} (unit + widget tests)
+\end{itemize}
+
+\subsection{Key Features}
+
+\begin{itemize}[nosep]
+  \item \textbf{Product browsing:} Browse a grid of coffee products with images and names.
+  \item \textbf{Drink customization:} Customize each drink by shot type, size, and ice level, with real-time price updates.
+  \item \textbf{Shopping cart:} Add, view, and remove items before checkout.
+  \item \textbf{Loyalty stamps:} Earn one stamp per order (max 8), then reset for rewards.
+  \item \textbf{Reward points:} Earn points based on order value and redeem them for free items.
+  \item \textbf{Order tracking:} View ongoing and past orders with swipe-to-toggle status.
+  \item \textbf{Profile management:} Edit name, email, phone, address, and avatar with inline editing.
+  \item \textbf{Data persistence:} All data persists across app restarts via Hive.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════
+\section{Architecture}
+
+The application follows the \textbf{Model--View--ViewModel (MVVM)} pattern with manual dependency injection (no DI framework).
+
+\subsection{Layer Diagram}
+
+\begin{center}
+\begin{mermaid}
+flowchart TD
+    V["Views (Screens & Widgets)"]
+    VM["ViewModels (ChangeNotifier)"]
+    M["Models (Domain Entities)"]
+    R["Repository / Services"]
+    S["Hive (Persistent Storage)"]
+
+    V -->|listens to| VM
+    VM -->|operates on| M
+    VM -->|reads/writes| R
+    R -->|persists via| S
+\end{mermaid}
+\end{center}
+
+\subsection{Layer Responsibilities}
+
+\begin{description}[style=nextline]
+  \item[Models (\texttt{lib/models/})]
+    Pure Dart domain entities with no framework dependencies. Business logic lives in entity methods (e.g.\ \texttt{Order.calculatePointsEarned()}, \texttt{CartItem.calculateSubtotal()}). Constructors use \texttt{assert} for invariant validation.
+
+  \item[ViewModels (\texttt{lib/viewmodels/})]
+    State holders extending \texttt{ChangeNotifier}. Each screen has a corresponding ViewModel that manages its state and exposes methods for user actions. ViewModels are manually wired in \texttt{main.dart} and passed as constructor parameters.
+
+  \item[Views (\texttt{lib/views/})]
+    \texttt{StatelessWidget} screens that receive their ViewModel via constructor injection. Navigation uses raw \texttt{Navigator.push}.
+
+  \item[Repository (\texttt{lib/repositories/})]
+    \texttt{AppRepository} aggregates all ViewModels and coordinates cross-cutting concerns (e.g.\ awarding stamps and points after checkout).
+
+  \item[Services (\texttt{lib/services/})]
+    \texttt{LocalStorage} wraps \texttt{Hive} for persisting user profile data, orders, cart items, and loyalty stamp count.
+\end{description}
+
+% ══════════════════════════════════════════════════════════
+\section{Screens}
+
+The application consists of 8 screens, each mapped to a specification requirement.
+
+\subsection{Home Screen}
+
+Displays a greeting header, the user's loyalty card, and a grid of available coffee products. The bottom navigation bar provides access to all main sections.
+
+\textbf{Interactions:}
+\begin{itemize}[nosep]
+  \item Tap a product card $\rightarrow$ navigate to Details Screen
+  \item Bottom nav tabs $\rightarrow$ navigate to corresponding screen
+\end{itemize}
+
+% Placeholder for screenshot
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{images/home_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Home Screen Screenshot}\vspace{3cm}}}
+  \caption{Home Screen}
+\end{figure}
+
+\subsection{Details Screen}
+
+Shows product details with customization options (shot type, size, ice level). Total price updates reactively as options and quantity change.
+
+\textbf{Interactions:}
+\begin{itemize}[nosep]
+  \item Cart icon $\rightarrow$ navigate to My Cart
+  \item ``Add to Cart'' button $\rightarrow$ persist item, show SnackBar confirmation
+  \item Back button $\rightarrow$ return to Home
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Details Screen Screenshot}\vspace{3cm}}}
+  \caption{Details Screen with Customization}
+\end{figure}
+
+\subsection{My Cart Screen}
+
+Renders cart items in a list view reflecting selected customizations. Displays the aggregate total price.
+
+\textbf{Interactions:}
+\begin{itemize}[nosep]
+  \item ``Checkout'' button $\rightarrow$ navigate to Order Success
+  \item Swipe left on item $\rightarrow$ remove from cart
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Cart Screen Screenshot}\vspace{3cm}}}
+  \caption{My Cart Screen}
+\end{figure}
+
+\subsection{Order Success Screen}
+
+Confirms the order was placed successfully.
+
+\textbf{Interactions:}
+\begin{itemize}[nosep]
+  \item ``Track My Order'' button $\rightarrow$ navigate to My Orders
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Order Success Screenshot}\vspace{3cm}}}
+  \caption{Order Success Screen}
+\end{figure}
+
+\subsection{My Orders Screen}
+
+Two-tab layout separating \textbf{Ongoing} and \textbf{History} orders.
+
+\textbf{Interactions:}
+\begin{itemize}[nosep]
+  \item Tab switching filters the order list
+  \item Swipe left on order card $\rightarrow$ toggle status between ongoing and history
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{My Orders Screenshot}\vspace{3cm}}}
+  \caption{My Orders Screen}
+\end{figure}
+
+\subsection{Rewards Screen}
+
+Displays the loyalty card with current stamp count, total reward points, and transaction history.
+
+\textbf{Business rules:}
+\begin{itemize}[nosep]
+  \item $+1$ stamp per completed order, maximum 8
+  \item Points awarded: $\lfloor \text{orderTotal} / 10{,}000 \rfloor$
+  \item Tap loyalty card at 8 stamps $\rightarrow$ reset to 0
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Rewards Screen Screenshot}\vspace{3cm}}}
+  \caption{Rewards Screen}
+\end{figure}
+
+\subsection{Redeem Rewards Screen}
+
+Product catalog showing items available for point redemption. Tapping an item shows a confirmation dialog; confirming deducts points from the balance.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Redeem Rewards Screenshot}\vspace{3cm}}}
+  \caption{Redeem Rewards Screen}
+\end{figure}
+
+\subsection{Profile Screen}
+
+Displays user profile (name, email, phone, address, avatar). An edit icon toggles inline editing; changes are persisted via \texttt{Hive}.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Profile Screen Screenshot}\vspace{3cm}}}
+  \caption{Profile Screen}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════
+\section{Domain Model}
+
+\subsection{Entity Overview}
+
+\begin{center}
+\begin{mermaid}
+flowchart TD
+    P[Product] --- CI[CartItem] --- O[Order]
+    RI[RedeemableItem] --- TX[Transaction] --- RP[RewardPoints]
+    LC[LoyaltyCard]
+    UP[UserProfile]
+
+    CI -.->|has| P
+    O -.->|contains| CI
+    RP -.->|tracks| TX
+    TX -.->|refs| O
+    TX -.->|refs| RI
+\end{mermaid}
+\end{center}
+
+\subsection{Entity Details}
+
+\setlength{\LTleft}{\fill}\setlength{\LTright}{\fill}
+\begin{longtable}{p{3cm}p{4cm}p{6.5cm}}
+  \toprule
+  \textbf{Entity} & \textbf{Key Attributes} & \textbf{Business Logic} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Entity} & \textbf{Key Attributes} & \textbf{Business Logic} \\
+  \midrule
+  \endhead
+
+  Product &
+    id, name, basePrice, availableCustomizations &
+    Unit price = basePrice + sum of selected customization deltas \\
+  \midrule
+
+  CartItem &
+    product, selectedCustomizations, quantity &
+    \texttt{calculateSubtotal()} = unit price $\times$ quantity \\
+  \midrule
+
+  Order &
+    id, items, status, createdAt &
+    \texttt{calculateTotalPrice()} = $\sum$ item subtotals \newline
+    \texttt{calculatePointsEarned()} = total $\div$ 10{,}000 \\
+  \midrule
+
+  LoyaltyCard &
+    stampCount (0--8) &
+    Increment capped at 8; reset only when exactly 8 \\
+  \midrule
+
+  RewardPoints &
+    balance, transactions &
+    \texttt{calculateTotalEarned()} = sum of earn transactions \newline
+    Redemption rejected if insufficient balance \\
+  \midrule
+
+  Transaction &
+    type (earn/redeem), amount, createdAt &
+    References orderId or redeemableItemId \\
+  \midrule
+
+  RedeemableItem &
+    id, name, pointCost &
+    Catalog item for point redemption \\
+  \midrule
+
+  UserProfile &
+    name, email, phone, avatarUrl &
+    Name must be non-empty; email validated by regex; \newline
+    phone (optional) must match VN format \texttt{0[35789]\textbackslash d\{8\}} \\
+
+  \bottomrule
+\end{longtable}
+
+% ══════════════════════════════════════════════════════════
+\section{Business Rules Implementation}
+
+\begin{enumerate}
+  \item \textbf{Loyalty stamps:} $+1$ per completed order, capped at 8. At 8 stamps, the user may tap the loyalty card to reset to 0. Enforced in \texttt{LoyaltyCard} entity with \texttt{assert} guards.
+
+  \item \textbf{Reward points:} $\lfloor \text{orderTotal} / 10{,}000 \rfloor$ points per order. Points are redeemable for products from the catalog. Insufficient balance blocks redemption.
+
+  \item \textbf{Order lifecycle:} Orders are created with ``ongoing'' status. The user can swipe to move an order to ``history'' (and back).
+
+  \item \textbf{Cart persistence:} Items persist with their customizations until explicitly removed or checked out.
+
+  \item \textbf{Dynamic pricing:} Total updates reactively when quantity or customization options change, computed via \texttt{CartItem.calculateSubtotal()}.
+
+  \item \textbf{Data persistence:} User profile, orders, cart items, and loyalty stamp count are persisted via \texttt{Hive}. Seed data provides initial values; persisted values override on subsequent launches.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════
+\section{Testing}
+
+All tests use the built-in \texttt{flutter\_test} framework with no external testing dependencies.
+
+\subsection{Test Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrr}
+  \toprule
+  \textbf{Category} & \textbf{Files} & \textbf{Tests} & \textbf{Passed} \\
+  \midrule
+  Unit tests        & 10 & 89  & 89 \\
+  UI (widget) tests &  7 & 55  & 55 \\
+  \midrule
+  \textbf{Total}    & \textbf{17} & \textbf{144} & \textbf{144} \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Unit Tests}
+
+Unit tests cover all domain entities and business logic in isolation, using pure Dart with no widget dependencies.
+
+\subsubsection{Entity Tests}
+
+\setlength{\LTleft}{\fill}\setlength{\LTright}{\fill}
+\begin{longtable}{p{3cm}p{10cm}}
+  \toprule
+  \textbf{Entity} & \textbf{Test Cases} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Entity} & \textbf{Test Cases} \\
+  \midrule
+  \endhead
+
+  Product &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create with valid name, price, customizations
+      \item Calculate unit price from base price
+      \item Calculate unit price with customization adjustments
+      \item Edge: zero or negative base price
+      \item Edge: name with max length or special characters
+    \end{itemize} \\
+  \midrule
+
+  CartItem &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create with product and selected customizations
+      \item Update quantity; verify subtotal recalculates
+      \item Edge: quantity zero or negative
+      \item Edge: no customizations selected
+    \end{itemize} \\
+  \midrule
+
+  Order &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create from cart items with correct total
+      \item Toggle status ongoing $\leftrightarrow$ history
+      \item Timestamp recorded correctly
+      \item Edge: empty items list
+      \item Edge: idempotent toggle
+    \end{itemize} \\
+  \midrule
+
+  LoyaltyCard &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Start at 0 stamps; increment up to max 8
+      \item Edge: increment beyond 8 (no change)
+      \item Edge: reset at exactly 8; no reset below 8
+    \end{itemize} \\
+  \midrule
+
+  RewardPoints &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Award points by order value
+      \item Deduct on redemption; track earn/redeem transactions
+      \item \texttt{calculateTotalEarned()} sums earn transactions
+      \item Edge: insufficient balance rejection
+      \item Edge: zero/negative point redemption
+    \end{itemize} \\
+  \midrule
+
+  RedeemableItem &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create with valid name and point cost
+      \item Edge: zero or negative point cost
+    \end{itemize} \\
+  \midrule
+
+  Transaction &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create earn/redeem transactions with correct fields
+      \item \texttt{createdAt} auto-set
+      \item Edge: zero or negative amount
+    \end{itemize} \\
+  \midrule
+
+  UserProfile &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Create and update name, email, phone, avatar
+      \item Edge: empty fields, invalid email format
+    \end{itemize} \\
+
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Business Logic Tests}
+
+\setlength{\LTleft}{\fill}\setlength{\LTright}{\fill}
+\begin{longtable}{p{3.5cm}p{9.5cm}}
+  \toprule
+  \textbf{Logic Area} & \textbf{Test Cases} \\
+  \midrule
+  \endfirsthead
+
+  Dynamic Pricing &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Total from base price alone
+      \item Total with customization deltas
+      \item Multiply by quantity; real-time update on option change
+      \item Edge: zero quantity $\rightarrow$ zero total
+    \end{itemize} \\
+  \midrule
+
+  Cart Total &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Single item total; aggregate for multiple items
+      \item Recalculate after item removal
+      \item Edge: empty cart $\rightarrow$ total of 0
+    \end{itemize} \\
+  \midrule
+
+  Points Calc.\ &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Correct points from order value
+      \item \texttt{calculateTotalPrice()} and \texttt{calculatePointsEarned()} consistency
+      \item Edge: zero-value order; large value overflow
+    \end{itemize} \\
+  \midrule
+
+  Points Aggregation &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item Sum from multiple earn transactions
+      \item Partial redemption; balance tracking
+      \item Edge: zero balance; repeated redemptions
+    \end{itemize} \\
+  \midrule
+
+  Loyalty Stamps &
+    \begin{itemize}[nosep,leftmargin=*]
+      \item $+1$ per order; stops at max 8
+      \item Reset at 8; first-order increment
+    \end{itemize} \\
+
+  \bottomrule
+\end{longtable}
+
+\subsubsection{Integration Tests}
+
+Integration tests exercise real workflows spanning multiple entities without mocking:
+
+\setlength{\LTleft}{\fill}\setlength{\LTright}{\fill}
+\begin{longtable}{p{4cm}p{9cm}}
+  \toprule
+  \textbf{Workflow} & \textbf{Scenarios} \\
+  \midrule
+
+  Add to Cart $\rightarrow$ Checkout $\rightarrow$ Order &
+    Add items, calculate totals, modify cart, empty cart rejected, order lifecycle \\
+  \midrule
+
+  Order $\rightarrow$ Stamps $\rightarrow$ Points &
+    Award stamps \& points on completion, 8-stamp reset, redeem \& deduct, insufficient balance \\
+  \midrule
+
+  Loyalty Card Reset &
+    Reset only at 8 stamps, no-op below 8 \\
+
+  \bottomrule
+\end{longtable}
+
+\subsection{UI (Widget) Tests}
+
+Widget tests verify screen rendering and user interactions with mocked ViewModels.
+
+\setlength{\LTleft}{\fill}\setlength{\LTright}{\fill}
+\begin{longtable}{p{3.5cm}p{9.5cm}}
+  \toprule
+  \textbf{Screen / Interaction} & \textbf{Test Cases} \\
+  \midrule
+  \endfirsthead
+
+  Home Screen &
+    Header display, loyalty card rendering, product grid, bottom navigation \\
+  \midrule
+
+  Details Screen &
+    Product info display, customization controls, add to cart with SnackBar, cart icon navigation \\
+  \midrule
+
+  Cart Screen &
+    Cart item list, swipe-to-remove, total recalculation, checkout flow, empty cart guard \\
+  \midrule
+
+  Orders Screen &
+    Two-tab layout, ongoing/history filtering, swipe to toggle status, empty state \\
+  \midrule
+
+  Rewards Screen &
+    Points balance, loyalty card, Redeem button, empty transaction history \\
+  \midrule
+
+  Redeem Rewards &
+    Product catalog, confirmation dialog, point deduction, disabled when insufficient \\
+  \midrule
+
+  Profile Screen &
+    Profile display, edit mode toggle, save changes, cancel discards, field isolation \\
+
+  \bottomrule
+\end{longtable}
+
+\begin{enumerate}
+  \item \textbf{Loyalty stamps:} $+1$ per completed order, capped at 8. At 8 stamps, the user may tap the loyalty card to reset to 0. Enforced in \texttt{LoyaltyCard} entity with \texttt{assert} guards.
+
+  \item \textbf{Reward points:} $\lfloor \text{orderTotal} / 10{,}000 \rfloor$ points per order. Points are redeemable for products from the catalog. Insufficient balance blocks redemption.
+
+  \item \textbf{Order lifecycle:} Orders are created with ``ongoing'' status. The user can swipe to move an order to ``history'' (and back).
+
+  \item \textbf{Cart persistence:} Items persist with their customizations until explicitly removed or checked out.
+
+  \item \textbf{Dynamic pricing:} Total updates reactively when quantity or customization options change, computed via \texttt{CartItem.calculateSubtotal()}.
+
+  \item \textbf{Data persistence:} User profile, orders, cart items, and loyalty stamp count are persisted via \texttt{Hive}. Seed data provides initial values; persisted values override on subsequent launches.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════
+\section{Additional Features}
+
+\begin{enumerate}
+  \item \textbf{Centralized navigation:} \texttt{AppNavigator} encapsulates all route transitions in one place.
+  \item \textbf{Shared formatting utilities:} \texttt{formatPrice()} and \texttt{formatDate()} in \texttt{lib/utils/format.dart} ensure consistent VND currency and date display across all screens.
+  \item \textbf{Reusable widget library:} Common UI blocks (\texttt{widgets/}) including loyalty card, product cards, and list tiles are extracted for reuse and consistency.
+  \item \textbf{Repository pattern:} \texttt{AppRepository} coordinates cross-ViewModel operations (e.g.\ awarding stamps and points atomically after checkout).
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════
+\section{Conclusion}
+
+The Code Cup implements all 8 specified screens with complete business logic for ordering, loyalty, rewards, and profile management. The MVVM architecture keeps domain logic testable and UI code thin. With 144 passing tests (89 unit + 55 widget), all entity invariants and screen interactions are verified.
+
+\end{document}

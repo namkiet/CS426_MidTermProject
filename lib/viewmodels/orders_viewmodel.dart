@@ -28,8 +28,8 @@ class OrdersViewModel extends RepoViewModel {
       )
       .toList();
 
-  String toggleStatus(String orderId) {
-    repo.toggleOrderStatus(orderId);
+  Future<String> toggleStatus(String orderId) async {
+    await repo.toggleOrderStatus(orderId);
     final after = repo.orders.where((o) => o.id == orderId).firstOrNull;
     if (after == null) return '';
     return after.status == OrderStatus.ongoing

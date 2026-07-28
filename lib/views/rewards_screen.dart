@@ -33,9 +33,10 @@ class RewardsScreen extends StatelessWidget {
           transactions: viewModel.transactions,
           onRedeem: onOpenRedeem,
           onResetLoyalty: viewModel.loyaltyCard.canReset
-              ? () {
-                  viewModel.resetLoyaltyCard();
-                  ScaffoldMessenger.of(context).showSnackBar(
+              ? () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  await viewModel.resetLoyaltyCard();
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('Loyalty card reset!'),
                       duration: Duration(seconds: 1),

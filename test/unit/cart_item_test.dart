@@ -48,7 +48,7 @@ void main() {
       expect(
         () =>
             CartItem(product: product, selectedCustomizations: {}, quantity: 0),
-        throwsAssertionError,
+        throwsArgumentError,
       );
       expect(
         () => CartItem(
@@ -56,7 +56,7 @@ void main() {
           selectedCustomizations: {},
           quantity: -1,
         ),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 

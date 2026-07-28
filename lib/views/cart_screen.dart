@@ -25,15 +25,17 @@ class CartScreen extends StatelessWidget {
         navigationBar: createNavigationBar(
           isEmpty: viewModel.isEmpty,
           totalLabel: viewModel.totalLabel,
-          onCheckout: () {
-            viewModel.checkout();
+          onCheckout: () async {
+            await viewModel.checkout();
             onCheckoutSuccess();
           },
         ),
         body: createBody(
           isEmpty: viewModel.isEmpty,
           lines: viewModel.lines,
-          onDismissed: viewModel.removeAt,
+          onDismissed: (index) {
+            viewModel.removeAt(index);
+          },
         ),
       ),
     );

@@ -12,13 +12,13 @@ flutter run
 flutter test
 
 # Run all unit tests
-flutter test tests/unit/
+flutter test test/unit/
 
 # Run all UI tests
-flutter test tests/ui/
+flutter test test/ui/
 
 # Run a single test file
-flutter test tests/ui/home_screen_test.dart
+flutter test test/ui/home_screen_test.dart
 
 # Run a specific test by name
 flutter test --name "shows user name"
@@ -46,7 +46,7 @@ lib/
     orders_screen.dart          — Orders placeholder
     details_screen.dart         — Product details with customization & add-to-cart
 
-tests/
+test/
   unit/                         — Entity/logic unit tests (pure Dart, no widgets)
   ui/                           — Widget integration tests with flutter_test
 ```

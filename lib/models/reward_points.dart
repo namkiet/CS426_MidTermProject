@@ -16,7 +16,9 @@ class RewardPoints {
   }
 
   void redeem(int amount, {required RedeemableItem redeemableItem}) {
-    assert(amount > 0);
+    if (amount <= 0) {
+      throw ArgumentError.value(amount, 'amount', 'Must be positive');
+    }
     if (amount > balance) {
       throw StateError('Insufficient points');
     }

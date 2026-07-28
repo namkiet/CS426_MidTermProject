@@ -1,0 +1,128 @@
+\section{Screens}
+
+The application consists of 8 screens, each mapped to a specification requirement.
+
+\subsection{Home Screen}
+
+Displays a greeting header, the user's loyalty card, and a grid of available coffee products. The bottom navigation bar provides access to all main sections.
+
+\textbf{Interactions:}
+\begin{itemize}
+  \item Tap a product card $\rightarrow$ navigate to Details Screen
+  \item Bottom nav tabs $\rightarrow$ navigate to corresponding screen
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{home_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Home Screen Screenshot}\vspace{3cm}}}
+  \caption{Home Screen}
+\end{figure}
+
+\subsection{Details Screen}
+
+Shows product details with customization options (shot type, size, ice level). Total price updates reactively as options and quantity change.
+
+\textbf{Interactions:}
+\begin{itemize}
+  \item Cart icon $\rightarrow$ navigate to My Cart
+  \item ``Add to Cart'' button $\rightarrow$ persist item, show SnackBar confirmation
+  \item Back button $\rightarrow$ return to Home
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{details_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Details Screen Screenshot}\vspace{3cm}}}
+  \caption{Details Screen with Customization}
+\end{figure}
+
+\subsection{My Cart Screen}
+
+Renders cart items in a list view reflecting selected customizations. Displays the aggregate total price.
+
+\textbf{Interactions:}
+\begin{itemize}
+  \item ``Checkout'' button $\rightarrow$ navigate to Order Success
+  \item Swipe left on item $\rightarrow$ remove from cart
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{cart_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Cart Screen Screenshot}\vspace{3cm}}}
+  \caption{My Cart Screen}
+\end{figure}
+
+\subsection{Order Success Screen}
+
+Confirms the order was placed successfully.
+
+\textbf{Interactions:}
+\begin{itemize}
+  \item ``Track My Order'' button $\rightarrow$ navigate to My Orders
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{order_success_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Order Success Screenshot}\vspace{3cm}}}
+  \caption{Order Success Screen}
+\end{figure}
+
+\subsection{My Orders Screen}
+
+Two-tab layout separating \textbf{Ongoing} and \textbf{History} orders.
+
+\textbf{Interactions:}
+\begin{itemize}
+  \item Tab switching filters the order list
+  \item Swipe left on order card $\rightarrow$ toggle status between ongoing and history
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{orders_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{My Orders Screenshot}\vspace{3cm}}}
+  \caption{My Orders Screen}
+\end{figure}
+
+\subsection{Rewards Screen}
+
+Displays the loyalty card with current stamp count, total reward points, and transaction history.
+
+\textbf{Business rules:}
+\begin{itemize}
+  \item $+1$ stamp per completed order, maximum 8
+  \item Points awarded: $\lfloor \text{orderTotal} / 10{,}000 \rfloor$
+  \item Tap loyalty card at 8 stamps $\rightarrow$ reset to 0
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{rewards_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Rewards Screen Screenshot}\vspace{3cm}}}
+  \caption{Rewards Screen}
+\end{figure}
+
+\subsection{Redeem Rewards Screen}
+
+Product catalog showing items available for point redemption. Tapping an item shows a confirmation dialog; confirming deducts points from the balance.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{redeem_rewards_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Redeem Rewards Screenshot}\vspace{3cm}}}
+  \caption{Redeem Rewards Screen}
+\end{figure}
+
+\subsection{Profile Screen}
+
+Displays user profile (name, email, phone, address, avatar). An edit icon toggles inline editing; changes are persisted via \texttt{SharedPreferences}.
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.4\textwidth]{profile_screen.png}
+  \fbox{\parbox{0.4\textwidth}{\centering\vspace{3cm}\textit{Profile Screen Screenshot}\vspace{3cm}}}
+  \caption{Profile Screen}
+\end{figure}

@@ -83,13 +83,15 @@ class RedeemRewardsScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              viewModel.redeem(item.id);
+            onPressed: () async {
+              final error = await viewModel.redeem(item.id);
+              if (!context.mounted || !ctx.mounted) return;
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Redeemed ${item.name}!'),
+                  content: Text(error ?? 'Redeemed ${item.name}!'),
                   duration: const Duration(seconds: 1),
+                  backgroundColor: error == null ? null : Colors.orange,
                 ),
               );
             },

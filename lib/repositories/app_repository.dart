@@ -54,17 +54,19 @@ class AppRepository extends ChangeNotifier {
   /// The repository already persists after each user action, but the spec
   /// expects pause/resume/stop handling, so we also flush the full state when
   /// the app is backgrounded or about to detach.
-  void persistAll() {
-    LocalStorage.saveUserProfile(userProfile);
-    LocalStorage.saveStampCount(loyaltyCard.stampCount);
-    LocalStorage.saveOrders(orders);
-    LocalStorage.saveRewardPoints(rewardPoints);
-    LocalStorage.saveCartItems(cartItems);
+  Future<void> persistAll() {
+    return Future.wait([
+      LocalStorage.saveUserProfile(userProfile),
+      LocalStorage.saveStampCount(loyaltyCard.stampCount),
+      LocalStorage.saveOrders(orders),
+      LocalStorage.saveRewardPoints(rewardPoints),
+      LocalStorage.saveCartItems(cartItems),
+    ]);
   }
 
   // ── Profile ──
 
-  String? updateName(String value) => _updateProfile(
+  Future<String?> updateName(String value) => _updateProfile(
     UserProfile(
       name: value,
       email: userProfile.email,
@@ -74,7 +76,7 @@ class AppRepository extends ChangeNotifier {
     ),
   );
 
-  String? updatePhone(String value) => _updateProfile(
+  Future<String?> updatePhone(String value) => _updateProfile(
     UserProfile(
       name: userProfile.name,
       email: userProfile.email,
@@ -84,7 +86,7 @@ class AppRepository extends ChangeNotifier {
     ),
   );
 
-  String? updateEmail(String value) => _updateProfile(
+  Future<String?> updateEmail(String value) => _updateProfile(
     UserProfile(
       name: userProfile.name,
       email: value,
@@ -94,7 +96,7 @@ class AppRepository extends ChangeNotifier {
     ),
   );
 
-  String? updateAddress(String value) => _updateProfile(
+  Future<String?> updateAddress(String value) => _updateProfile(
     UserProfile(
       name: userProfile.name,
       email: userProfile.email,
@@ -104,7 +106,7 @@ class AppRepository extends ChangeNotifier {
     ),
   );
 
-  String? updateAvatar(String value) => _updateProfile(
+  Future<String?> updateAvatar(String value) => _updateProfile(
     UserProfile(
       name: userProfile.name,
       email: userProfile.email,
@@ -114,81 +116,81 @@ class AppRepository extends ChangeNotifier {
     ),
   );
 
-  String? _updateProfile(UserProfile updated) {
+  Future<String?> _updateProfile(UserProfile updated) async {
     try {
       userProfile = updated;
-      LocalStorage.saveUserProfile(updated);
+      await LocalStorage.saveUserProfile(updated);
       notifyListeners();
       return null;
-    } on AssertionError {
+    } on ArgumentError {
       return 'Invalid value for this field';
     }
   }
 
   // ── Cart ──
 
-  void addToCart(CartItem item) {
+  Future<void> addToCart(CartItem item) async {
     cartItems.add(item);
-    LocalStorage.saveCartItems(cartItems);
+    await LocalStorage.saveCartItems(cartItems);
     notifyListeners();
   }
 
-  void removeFromCart(int index) {
+  Future<void> removeFromCart(int index) async {
     if (index < 0 || index >= cartItems.length) return;
     cartItems.removeAt(index);
-    LocalStorage.saveCartItems(cartItems);
+    await LocalStorage.saveCartItems(cartItems);
     notifyListeners();
   }
 
-  void clearCart() {
+  Future<void> clearCart() async {
     cartItems.clear();
-    LocalStorage.saveCartItems(cartItems);
+    await LocalStorage.saveCartItems(cartItems);
     notifyListeners();
   }
 
-  void checkout() {
+  Future<void> checkout() async {
     if (cartItems.isEmpty) return;
     final order = Order(items: List.from(cartItems));
     orders.add(order);
-    LocalStorage.saveOrders(orders);
+    await LocalStorage.saveOrders(orders);
     loyaltyCard.increment();
-    LocalStorage.saveStampCount(loyaltyCard.stampCount);
+    await LocalStorage.saveStampCount(loyaltyCard.stampCount);
     rewardPoints.award(order.calculatePointsEarned(), order: order);
-    LocalStorage.saveRewardPoints(rewardPoints);
+    await LocalStorage.saveRewardPoints(rewardPoints);
     cartItems.clear();
-    LocalStorage.saveCartItems(cartItems);
+    await LocalStorage.saveCartItems(cartItems);
     notifyListeners();
   }
 
   // ── Orders ──
 
-  void toggleOrderStatus(String orderId) {
+  Future<void> toggleOrderStatus(String orderId) async {
     final order = orders.where((o) => o.id == orderId).firstOrNull;
     if (order == null) return;
     order.toggleStatus();
-    LocalStorage.saveOrders(orders);
+    await LocalStorage.saveOrders(orders);
     notifyListeners();
   }
 
   // ── Rewards ──
 
-  void resetLoyaltyCard() {
+  Future<void> resetLoyaltyCard() async {
     loyaltyCard.reset();
-    LocalStorage.saveStampCount(loyaltyCard.stampCount);
+    await LocalStorage.saveStampCount(loyaltyCard.stampCount);
     notifyListeners();
   }
 
-  String? redeemItem(String redeemableId) {
+  Future<String?> redeemItem(String redeemableId) async {
     final item = redeemableById(redeemableId);
     if (item == null) return 'Item not found';
     try {
       rewardPoints.redeem(item.pointCost, redeemableItem: item);
-      LocalStorage.saveRewardPoints(rewardPoints);
+      await LocalStorage.saveRewardPoints(rewardPoints);
       notifyListeners();
       return null;
     } on StateError catch (e) {
       return e.message;
-    } on AssertionError {
+    } on ArgumentError {
       return 'Invalid redemption';
     }
   }

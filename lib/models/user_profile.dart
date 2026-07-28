@@ -11,9 +11,17 @@ class UserProfile {
     this.phone,
     this.avatarUrl,
     this.address,
-  }) : assert(name.isNotEmpty),
-       assert(isValidEmail(email)),
-       assert(isValidPhone(phone));
+  }) {
+    if (name.isEmpty) {
+      throw ArgumentError.value(name, 'name', 'Must not be empty');
+    }
+    if (!isValidEmail(email)) {
+      throw ArgumentError.value(email, 'email', 'Must be a valid email');
+    }
+    if (!isValidPhone(phone)) {
+      throw ArgumentError.value(phone, 'phone', 'Must be a valid VN phone');
+    }
+  }
 
   static bool isValidEmail(String email) {
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);

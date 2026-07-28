@@ -55,14 +55,14 @@ void main() {
     test('reject zero amount', () {
       expect(
         () => Transaction(type: TransactionType.earn, amount: 0),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
 
     test('reject negative amount', () {
       expect(
         () => Transaction(type: TransactionType.earn, amount: -5),
-        throwsAssertionError,
+        throwsArgumentError,
       );
     });
   });

@@ -79,7 +79,7 @@ void main() {
     });
 
     test('empty cart cannot create order', () {
-      expect(() => Order(items: []), throwsAssertionError);
+      expect(() => Order(items: []), throwsArgumentError);
     });
 
     test('order toggles from ongoing to history on completion', () {

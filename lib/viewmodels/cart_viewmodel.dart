@@ -34,14 +34,14 @@ class CartViewModel extends RepoViewModel {
     return out;
   }
 
-  void addToCart(
+  Future<void> addToCart(
     String productId,
     Map<String, String> selections,
     int quantity,
-  ) {
+  ) async {
     final product = repo.productById(productId);
     if (product == null) return;
-    repo.addToCart(
+    await repo.addToCart(
       CartItem(
         product: product,
         selectedCustomizations: Map.from(selections),
@@ -50,9 +50,9 @@ class CartViewModel extends RepoViewModel {
     );
   }
 
-  void removeAt(int index) => repo.removeFromCart(index);
+  Future<void> removeAt(int index) => repo.removeFromCart(index);
 
-  void clear() => repo.clearCart();
+  Future<void> clear() => repo.clearCart();
 
-  void checkout() => repo.checkout();
+  Future<void> checkout() => repo.checkout();
 }

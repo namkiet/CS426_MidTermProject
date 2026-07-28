@@ -16,8 +16,11 @@ class Transaction {
     this.order,
     this.redeemableItem,
     DateTime? createdAt,
-  }) : assert(amount > 0),
-       createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now() {
+    if (amount <= 0) {
+      throw ArgumentError.value(amount, 'amount', 'Must be positive');
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     'type': type.name,

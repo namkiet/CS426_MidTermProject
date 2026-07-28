@@ -9,9 +9,14 @@ class RedeemableItem {
     required this.name,
     required this.pointCost,
     this.imageUrl,
-  }) : id = id ?? _generateId(name),
-       assert(name.isNotEmpty),
-       assert(pointCost > 0);
+  }) : id = id ?? _generateId(name) {
+    if (name.isEmpty) {
+      throw ArgumentError.value(name, 'name', 'Must not be empty');
+    }
+    if (pointCost <= 0) {
+      throw ArgumentError.value(pointCost, 'pointCost', 'Must be positive');
+    }
+  }
 
   static String _generateId(String name) =>
       name.toLowerCase().replaceAll(RegExp(r'\s+'), '-');

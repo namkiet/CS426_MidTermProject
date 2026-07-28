@@ -1,0 +1,26 @@
+\section{Business Rules \& Additional Features}
+
+\subsection{Business Rules}
+
+\begin{enumerate}
+  \item \textbf{Loyalty stamps:} $+1$ per completed order, capped at 8. At 8 stamps, the user may tap the loyalty card to reset to 0. Enforced in \texttt{LoyaltyCard} entity with \texttt{assert} guards.
+
+  \item \textbf{Reward points:} $\lfloor \text{orderTotal} / 10{,}000 \rfloor$ points per order. Points are redeemable for products from the catalog. Insufficient balance blocks redemption.
+
+  \item \textbf{Order lifecycle:} Orders are created with ``ongoing'' status. The user can swipe to move an order to ``history'' (and back).
+
+  \item \textbf{Cart persistence:} Items persist with their customizations until explicitly removed or checked out.
+
+  \item \textbf{Dynamic pricing:} Total updates reactively when quantity or customization options change, computed via \texttt{CartItem.calculateSubtotal()}.
+
+  \item \textbf{Data persistence:} User profile (name, email, phone, address) and loyalty stamp count are persisted via \texttt{SharedPreferences}. Seed data provides initial values; persisted values override on subsequent launches.
+\end{enumerate}
+
+\subsection{Additional Features}
+
+\begin{enumerate}
+  \item \textbf{Centralized navigation:} \texttt{AppNavigator} encapsulates all route transitions in one place.
+  \item \textbf{Shared formatting utilities:} \texttt{formatPrice()} and \texttt{formatDate()} in \texttt{lib/utils/format.dart} ensure consistent VND currency and date display across all screens.
+  \item \textbf{Reusable widget library:} Common UI blocks (\texttt{widgets/}) including loyalty card, product cards, and list tiles are extracted for reuse and consistency.
+  \item \textbf{Repository pattern:} \texttt{AppRepository} coordinates cross-ViewModel operations (e.g.\ awarding stamps and points atomically after checkout).
+\end{enumerate}

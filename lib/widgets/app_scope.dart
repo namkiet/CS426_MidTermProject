@@ -10,8 +10,13 @@ class AppScope extends InheritedWidget {
 
   static AppViewModels of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
-    assert(scope != null, 'AppScope not found');
-    return scope!.vms;
+    if (scope == null) {
+      throw FlutterError(
+        'AppScope not found in context. Wrap the app with AppScope before '
+        'using AppNavigator or reading AppViewModels.',
+      );
+    }
+    return scope.vms;
   }
 
   @override

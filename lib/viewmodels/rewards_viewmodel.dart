@@ -55,9 +55,9 @@ class RewardsViewModel extends RepoViewModel {
         .toList();
   }
 
-  void resetLoyaltyCard() => repo.resetLoyaltyCard();
+  Future<void> resetLoyaltyCard() => repo.resetLoyaltyCard();
 
-  String? redeem(String redeemableId) => repo.redeemItem(redeemableId);
+  Future<String?> redeem(String redeemableId) => repo.redeemItem(redeemableId);
 
   String confirmMessage(String redeemableId) {
     final item = repo.redeemableById(redeemableId);

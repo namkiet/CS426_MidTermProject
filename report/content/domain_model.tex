@@ -1,0 +1,86 @@
+\section{Domain Model}
+
+\subsection{Entity Overview}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  entity/.style={draw, rounded corners, minimum width=3.2cm, minimum height=0.8cm,
+                 align=center, font=\small\sffamily, fill=blue!10},
+  rel/.style={-{Stealth[length=2.5mm]}, thick, gray!70},
+  node distance=1.5cm and 2.5cm
+]
+  \node[entity] (product)    {Product};
+  \node[entity, right=of product]  (cartitem)  {CartItem};
+  \node[entity, right=of cartitem] (order)     {Order};
+  \node[entity, below=of product]  (redeem)    {RedeemableItem};
+  \node[entity, below=of cartitem] (txn)       {Transaction};
+  \node[entity, below=of order]    (reward)    {RewardPoints};
+  \node[entity, below=of txn]      (loyalty)   {LoyaltyCard};
+  \node[entity, below=of reward]   (user)      {UserProfile};
+
+  \draw[rel] (cartitem) -- node[above, font=\tiny]{has} (product);
+  \draw[rel] (order)    -- node[above, font=\tiny]{contains} (cartitem);
+  \draw[rel] (reward)   -- node[right, font=\tiny]{tracks} (txn);
+  \draw[rel] (txn.west) -- node[below, font=\tiny]{refs} (order.south east);
+  \draw[rel] (txn)      -- node[left, font=\tiny]{refs} (redeem);
+\end{tikzpicture}
+\caption{Entity relationship diagram}
+\end{figure}
+
+\subsection{Entity Details}
+
+\begin{longtable}{p{3cm}p{4cm}p{6.5cm}}
+  \caption{Domain entities} \\
+  \toprule
+  \textbf{Entity} & \textbf{Key Attributes} & \textbf{Business Logic} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Entity} & \textbf{Key Attributes} & \textbf{Business Logic} \\
+  \midrule
+  \endhead
+
+  Product &
+    id, name, basePrice, availableCustomizations &
+    Unit price = basePrice + sum of selected customization deltas \\
+  \midrule
+
+  CartItem &
+    product, selectedCustomizations, quantity &
+    \texttt{calculateSubtotal()} = unit price $\times$ quantity \\
+  \midrule
+
+  Order &
+    id, items, status, createdAt &
+    \texttt{calculateTotalPrice()} = $\sum$ item subtotals \newline
+    \texttt{calculatePointsEarned()} = total $\div$ 10{,}000 \\
+  \midrule
+
+  LoyaltyCard &
+    stampCount (0--8) &
+    Increment capped at 8; reset only when exactly 8 \\
+  \midrule
+
+  RewardPoints &
+    balance, transactions &
+    \texttt{calculateTotalEarned()} = sum of earn transactions \newline
+    Redemption rejected if insufficient balance \\
+  \midrule
+
+  Transaction &
+    type (earn/redeem), amount, createdAt &
+    References orderId or redeemableItemId \\
+  \midrule
+
+  RedeemableItem &
+    id, name, pointCost &
+    Catalog item for point redemption \\
+  \midrule
+
+  UserProfile &
+    name, email, phone, avatarUrl &
+    Persisted via SharedPreferences \\
+
+  \bottomrule
+\end{longtable}
