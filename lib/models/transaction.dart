@@ -18,4 +18,26 @@ class Transaction {
     DateTime? createdAt,
   })  : assert(amount > 0),
       createdAt = createdAt ?? DateTime.now();
+
+  Map<String, dynamic> toJson() => {
+        'type': type.name,
+        'amount': amount,
+        'order': order?.toJson(),
+        'redeemableItem': redeemableItem?.toJson(),
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
+        type: TransactionType.values.firstWhere(
+            (t) => t.name == json['type'] as String),
+        amount: json['amount'] as int,
+        order: json['order'] != null
+            ? Order.fromJson(json['order'] as Map<String, dynamic>)
+            : null,
+        redeemableItem: json['redeemableItem'] != null
+            ? RedeemableItem.fromJson(
+                json['redeemableItem'] as Map<String, dynamic>)
+            : null,
+        createdAt: DateTime.parse(json['createdAt'] as String),
+      );
 }

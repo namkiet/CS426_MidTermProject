@@ -55,3 +55,8 @@ linux/flutter/ephemeral/
 # Web
 web/manifest.json
 web/icons/
+
+# Claude
+.agents/
+.claude/
+skills-lock.json

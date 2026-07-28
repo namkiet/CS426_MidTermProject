@@ -15,4 +15,17 @@ class CartItem {
     return product.calculateUnitPrice(selectedCustomizations) * quantity;
   }
 
+  Map<String, dynamic> toJson() => {
+        'product': product.toJson(),
+        'selectedCustomizations': selectedCustomizations,
+        'quantity': quantity,
+      };
+
+  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
+        product: Product.fromJson(json['product'] as Map<String, dynamic>),
+        selectedCustomizations:
+            (json['selectedCustomizations'] as Map<String, dynamic>)
+                .map((k, v) => MapEntry(k, v as String)),
+        quantity: json['quantity'] as int,
+      );
 }

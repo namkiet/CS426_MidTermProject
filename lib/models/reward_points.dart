@@ -35,4 +35,17 @@ class RewardPoints {
         .where((t) => t.type == TransactionType.earn)
         .fold(0, (sum, t) => sum + t.amount);
   }
+
+  Map<String, dynamic> toJson() => {
+        'balance': balance,
+        'transactions': transactions.map((t) => t.toJson()).toList(),
+      };
+
+  factory RewardPoints.fromJson(Map<String, dynamic> json) {
+    final rp = RewardPoints(balance: json['balance'] as int);
+    rp.transactions
+        .addAll((json['transactions'] as List<dynamic>)
+            .map((t) => Transaction.fromJson(t as Map<String, dynamic>)));
+    return rp;
+  }
 }

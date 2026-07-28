@@ -7,12 +7,12 @@ void main() {
       final profile = UserProfile(
         name: 'Nam Kiet',
         email: 'kiet@example.com',
-        phone: '0123456789',
+        phone: '0912345678',
         avatarUrl: 'https://example.com/avatar.png',
       );
       expect(profile.name, 'Nam Kiet');
       expect(profile.email, 'kiet@example.com');
-      expect(profile.phone, '0123456789');
+      expect(profile.phone, '0912345678');
       expect(profile.avatarUrl, 'https://example.com/avatar.png');
     });
 
@@ -58,6 +58,43 @@ void main() {
     test('accept valid emails', () {
       UserProfile(name: 'Test', email: 'user@example.com');
       UserProfile(name: 'Test', email: 'user.name@example.co.vn');
+    });
+
+    // ── Phone validation ──
+
+    test('accept valid VN phone number starting with 0', () {
+      UserProfile(name: 'A', email: 'a@b.com', phone: '0912345678');
+    });
+
+    test('accept valid VN phone starting with 03/07/08/09', () {
+      UserProfile(name: 'A', email: 'a@b.com', phone: '0351234567');
+      UserProfile(name: 'B', email: 'b@b.com', phone: '0771234567');
+      UserProfile(name: 'C', email: 'c@b.com', phone: '0861234567');
+    });
+
+    test('reject phone shorter than 10 digits', () {
+      expect(
+        () => UserProfile(name: 'A', email: 'a@b.com', phone: '091234567'),
+        throwsAssertionError,
+      );
+    });
+
+    test('reject phone longer than 10 digits', () {
+      expect(
+        () => UserProfile(name: 'A', email: 'a@b.com', phone: '09123456789'),
+        throwsAssertionError,
+      );
+    });
+
+    test('reject phone not starting with 0', () {
+      expect(
+        () => UserProfile(name: 'A', email: 'a@b.com', phone: '1912345678'),
+        throwsAssertionError,
+      );
+    });
+
+    test('accept null phone (optional field)', () {
+      UserProfile(name: 'A', email: 'a@b.com');
     });
   });
 }
