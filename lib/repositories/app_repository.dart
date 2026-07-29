@@ -66,57 +66,7 @@ class AppRepository extends ChangeNotifier {
 
   // ── Profile ──
 
-  Future<String?> updateName(String value) => _updateProfile(
-    UserProfile(
-      name: value,
-      email: userProfile.email,
-      phone: userProfile.phone,
-      avatarUrl: userProfile.avatarUrl,
-      address: userProfile.address,
-    ),
-  );
-
-  Future<String?> updatePhone(String value) => _updateProfile(
-    UserProfile(
-      name: userProfile.name,
-      email: userProfile.email,
-      phone: value,
-      avatarUrl: userProfile.avatarUrl,
-      address: userProfile.address,
-    ),
-  );
-
-  Future<String?> updateEmail(String value) => _updateProfile(
-    UserProfile(
-      name: userProfile.name,
-      email: value,
-      phone: userProfile.phone,
-      avatarUrl: userProfile.avatarUrl,
-      address: userProfile.address,
-    ),
-  );
-
-  Future<String?> updateAddress(String value) => _updateProfile(
-    UserProfile(
-      name: userProfile.name,
-      email: userProfile.email,
-      phone: userProfile.phone,
-      avatarUrl: userProfile.avatarUrl,
-      address: value,
-    ),
-  );
-
-  Future<String?> updateAvatar(String value) => _updateProfile(
-    UserProfile(
-      name: userProfile.name,
-      email: userProfile.email,
-      phone: userProfile.phone,
-      avatarUrl: value,
-      address: userProfile.address,
-    ),
-  );
-
-  Future<String?> _updateProfile(UserProfile updated) async {
+  Future<String?> updateProfile(UserProfile updated) async {
     try {
       userProfile = updated;
       await LocalStorage.saveUserProfile(updated);
@@ -144,6 +94,21 @@ class AppRepository extends ChangeNotifier {
 
   Future<void> clearCart() async {
     cartItems.clear();
+    await LocalStorage.saveCartItems(cartItems);
+    notifyListeners();
+  }
+
+  Future<void> removeCartItems(Iterable<int> indices) async {
+    final sorted = indices.toList()..sort((a, b) => b.compareTo(a));
+    for (final i in sorted) {
+      if (i >= 0 && i < cartItems.length) cartItems.removeAt(i);
+    }
+    await LocalStorage.saveCartItems(cartItems);
+    notifyListeners();
+  }
+
+  Future<void> updateCartItem(int index, CartItem item) async {
+    cartItems[index] = item;
     await LocalStorage.saveCartItems(cartItems);
     notifyListeners();
   }

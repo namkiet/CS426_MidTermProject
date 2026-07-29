@@ -1,3 +1,4 @@
+% ══════════════════════════════════════════════════════════
 \section{Testing}
 
 All tests use the built-in \texttt{flutter\_test} framework with no external testing dependencies.
@@ -6,16 +7,16 @@ All tests use the built-in \texttt{flutter\_test} framework with no external tes
 
 \begin{table}[H]
 \centering
-\caption{Test results}
-\begin{tabular}{lrrr}
-  \toprule
-  \textbf{Category} & \textbf{Files} & \textbf{Tests} & \textbf{Passed} \\
-  \midrule
-  Unit tests        & 10 & 89  & 89 \\
-  UI (widget) tests &  7 & 55  & 55 \\
-  \midrule
-  \textbf{Total}    & \textbf{17} & \textbf{144} & \textbf{144} \\
-  \bottomrule
+\begin{tabular}{|l|r|r|}
+  \hline
+  \textbf{Category} & \textbf{Files} & \textbf{Tests} \\
+  \hline
+  Unit tests        & 7  & 68 \\
+  Integration tests & 1  & 11 \\
+  UI (widget) tests & 11 & 72 \\
+  \hline
+  \textbf{Total}    & \textbf{19} & \textbf{151} \\
+  \hline
 \end{tabular}
 \end{table}
 
@@ -25,213 +26,208 @@ Unit tests cover all domain entities and business logic in isolation, using pure
 
 \subsubsection{Entity Tests}
 
-\begin{longtable}{p{3cm}p{10cm}}
-  \caption{Entity test cases} \\
-  \toprule
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{|p{4cm}|p{12cm}|}
+  \hline
   \textbf{Entity} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endfirsthead
-  \toprule
+  \hline
   \textbf{Entity} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endhead
 
   Product &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create with valid name, price, customizations
-      \item Calculate unit price from base price
-      \item Calculate unit price with customization adjustments
-      \item Edge: zero or negative base price
-      \item Edge: name with max length or special characters
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create with valid name, price, customizations\\
+      • Calculate unit price from base price\\
+      • Calculate unit price with customization adjustments\\
+      • Edge: zero or negative base price\\
+      • Edge: name with max length or special characters
+    \end{tabular} \\
+  \hline
 
   CartItem &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create with product and selected customizations
-      \item Update quantity; verify subtotal recalculates
-      \item Edge: quantity zero or negative
-      \item Edge: no customizations selected
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create with product and selected customizations\\
+      • Update quantity; verify subtotal recalculates\\
+      • Edge: quantity zero or negative\\
+      • Edge: no customizations selected
+    \end{tabular} \\
+  \hline
 
   Order &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create from cart items with correct total
-      \item Toggle status ongoing $\leftrightarrow$ history
-      \item Timestamp recorded correctly
-      \item Edge: empty items list
-      \item Edge: idempotent toggle
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create from cart items with correct total\\
+      • Toggle status ongoing $\leftrightarrow$ history\\
+      • Timestamp recorded correctly\\
+      • Edge: empty items list\\
+      • Edge: idempotent toggle
+    \end{tabular} \\
+  \hline
 
   LoyaltyCard &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Start at 0 stamps; increment up to max 8
-      \item Edge: increment beyond 8 (no change)
-      \item Edge: reset at exactly 8; no reset below 8
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Start at 0 stamps; increment up to max 8\\
+      • Edge: increment beyond 8 (no change)\\
+      • Edge: reset at exactly 8; no reset below 8
+    \end{tabular} \\
+  \hline
 
   RewardPoints &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Award points by order value
-      \item Deduct on redemption; track earn/redeem transactions
-      \item \texttt{calculateTotalEarned()} sums earn transactions
-      \item Edge: insufficient balance rejection
-      \item Edge: zero/negative point redemption
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Award points by order value\\
+      • Deduct on redemption; track earn/redeem transactions\\
+      • \texttt{calculateTotalEarned()} sums earn transactions\\
+      • Edge: insufficient balance rejection\\
+      • Edge: zero/negative point redemption
+    \end{tabular} \\
+  \hline
 
   RedeemableItem &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create with valid name and point cost
-      \item Edge: zero or negative point cost
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create with valid name and point cost\\
+      • Edge: zero or negative point cost
+    \end{tabular} \\
+  \hline
 
   Transaction &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create earn/redeem transactions with correct fields
-      \item \texttt{createdAt} auto-set
-      \item Edge: zero or negative amount
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create earn/redeem transactions with correct fields\\
+      • \texttt{createdAt} auto-set\\
+      • Edge: zero or negative amount
+    \end{tabular} \\
+  \hline
 
   UserProfile &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Create and update name, email, phone, avatar
-      \item Edge: empty fields, invalid email format
-    \end{itemize} \\
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Create and update name, email, phone, avatar\\
+      • Edge: empty fields, invalid email format
+    \end{tabular} \\
 
-  \bottomrule
+  \hline
 \end{longtable}
 
 \subsubsection{Business Logic Tests}
 
-\begin{longtable}{p{3.5cm}p{9.5cm}}
-  \caption{Business logic test cases} \\
-  \toprule
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{|p{4cm}|p{12cm}|}
+  \hline
   \textbf{Logic Area} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endfirsthead
-  \toprule
+  \hline
   \textbf{Logic Area} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endhead
 
   Dynamic Pricing &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Total from base price alone
-      \item Total with customization deltas
-      \item Multiply by quantity; real-time update on option change
-      \item Edge: zero quantity $\rightarrow$ zero total
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Total from base price alone\\
+      • Total with customization deltas\\
+      • Multiply by quantity; real-time update on option change\\
+      • Edge: zero quantity $\rightarrow$ zero total
+    \end{tabular} \\
+  \hline
 
   Cart Total &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Single item total; aggregate for multiple items
-      \item Recalculate after item removal
-      \item Edge: empty cart $\rightarrow$ total of 0
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Single item total; aggregate for multiple items\\
+      • Recalculate after item removal\\
+      • Edge: empty cart $\rightarrow$ total of 0
+    \end{tabular} \\
+  \hline
 
   Points Calc.\ &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Correct points from order value
-      \item \texttt{calculateTotalPrice()} and \texttt{calculatePointsEarned()} consistency
-      \item Edge: zero-value order; large value overflow
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Correct points from order value\\
+      • \texttt{calculateTotalPrice()} and \texttt{calculatePointsEarned()} consistency\\
+      • Edge: zero-value order; large value overflow
+    \end{tabular} \\
+  \hline
 
   Points Aggregation &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item Sum from multiple earn transactions
-      \item Partial redemption; balance tracking
-      \item Edge: zero balance; repeated redemptions
-    \end{itemize} \\
-  \midrule
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • Sum from multiple earn transactions\\
+      • Partial redemption; balance tracking\\
+      • Edge: zero balance; repeated redemptions
+    \end{tabular} \\
+  \hline
 
   Loyalty Stamps &
-    \begin{itemize}[nosep,leftmargin=*]
-      \item $+1$ per order; stops at max 8
-      \item Reset at 8; first-order increment
-    \end{itemize} \\
+    \begin{tabular}[t]{@{}p{\linewidth}@{}}
+      • $+1$ per order; stops at max 8\\
+      • Reset at 8; first-order increment
+    \end{tabular} \\
 
-  \bottomrule
+  \hline
 \end{longtable}
 
-\subsubsection{Integration Tests}
+\subsection{Integration Tests}
 
 Integration tests exercise real workflows spanning multiple entities without mocking:
 
-\begin{longtable}{p{4cm}p{9cm}}
-  \caption{Integration test workflows} \\
-  \toprule
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{|p{6.5cm}|p{9.5cm}|}
+  \hline
   \textbf{Workflow} & \textbf{Scenarios} \\
-  \midrule
-  \endfirsthead
-  \toprule
-  \textbf{Workflow} & \textbf{Scenarios} \\
-  \midrule
-  \endhead
+  \hline
 
   Add to Cart $\rightarrow$ Checkout $\rightarrow$ Order &
     Add items, calculate totals, modify cart, empty cart rejected, order lifecycle \\
-  \midrule
+  \hline
 
   Order $\rightarrow$ Stamps $\rightarrow$ Points &
     Award stamps \& points on completion, 8-stamp reset, redeem \& deduct, insufficient balance \\
-  \midrule
+  \hline
 
   Loyalty Card Reset &
     Reset only at 8 stamps, no-op below 8 \\
 
-  \bottomrule
+  \hline
 \end{longtable}
 
 \subsection{UI (Widget) Tests}
 
 Widget tests verify screen rendering and user interactions with mocked ViewModels.
 
-\begin{longtable}{p{3.5cm}p{9.5cm}}
-  \caption{UI test cases} \\
-  \toprule
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{|p{5cm}|p{11cm}|}
+  \hline
   \textbf{Screen / Interaction} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endfirsthead
-  \toprule
+  \hline
   \textbf{Screen / Interaction} & \textbf{Test Cases} \\
-  \midrule
+  \hline
   \endhead
 
   Home Screen &
     Header display, loyalty card rendering, product grid, bottom navigation \\
-  \midrule
+  \hline
 
   Details Screen &
-    Product info display, customization controls, add to cart with SnackBar, cart icon navigation \\
-  \midrule
+    Product info display, customization controls, add to cart with centered overlay confirmation, cart icon navigation \\
+  \hline
 
   Cart Screen &
     Cart item list, swipe-to-remove, total recalculation, checkout flow, empty cart guard \\
-  \midrule
+  \hline
 
   Orders Screen &
     Two-tab layout, ongoing/history filtering, swipe to toggle status, empty state \\
-  \midrule
+  \hline
 
   Rewards Screen &
     Points balance, loyalty card, Redeem button, empty transaction history \\
-  \midrule
+  \hline
 
   Redeem Rewards &
     Product catalog, confirmation dialog, point deduction, disabled when insufficient \\
-  \midrule
+  \hline
 
   Profile Screen &
     Profile display, edit mode toggle, save changes, cancel discards, field isolation \\
 
-  \bottomrule
+  \hline
 \end{longtable}

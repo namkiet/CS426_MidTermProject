@@ -1,35 +1,57 @@
+% ══════════════════════════════════════════════════════════
 \section{Introduction}
 
 \textbf{The Code Cup} is a mobile coffee shop application built with Flutter, targeting Android. Users can browse a coffee menu, customize and order drinks, collect loyalty stamps, earn and redeem reward points, and manage their profile.
 
 \subsection{Technology Stack}
 
-\begin{itemize}
-  \item \textbf{Framework:} Flutter (Dart)
-  \item \textbf{Target platform:} Android
-  \item \textbf{Architecture:} MVVM (Model--View--ViewModel)
-  \item \textbf{State management:} \texttt{ChangeNotifier}
-  \item \textbf{Persistence:} \texttt{SharedPreferences}
-  \item \textbf{Testing:} \texttt{flutter\_test} (unit + widget tests)
-\end{itemize}
-
-\subsection{Codebase Statistics}
-
 \begin{table}[H]
 \centering
-\caption{Codebase metrics}
-\begin{tabular}{lr}
-  \toprule
-  Metric & Count \\
-  \midrule
-  Source files (\texttt{lib/}) & 34 \\
-  Source lines of code & 3{,}824 \\
-  Test files (\texttt{tests/}) & 18 \\
-  Test lines of code & 1{,}952 \\
-  Total tests & 144 \\
-  \quad Unit tests & 89 \\
-  \quad UI (widget) tests & 55 \\
-  Pass rate & 100\% \\
-  \bottomrule
+{\setlength{\tabcolsep}{4pt}\begin{tabular}{|>{\raggedright\arraybackslash}p{2.75cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{10cm}|}
+  \hline
+  \textbf{Technology} & \textbf{Purpose} & \textbf{Rationale} \\
+  \hline
+  Flutter (Dart) & Cross-platform UI framework & Write once, deploy to mobile, web, and desktop from a single codebase \\
+  \hline
+  Android & Target platform & Required by specification \\
+  \hline
+  MVVM & Architecture pattern & Clean separation of concerns; UI and logic can be developed and tested independently \\
+  \hline
+  ChangeNotifier & State management & Built-in Flutter mechanism; pairs naturally with MVVM via reactive listeners \\
+  \hline
+  Hive & Persistence & Lightweight, fast, pure Dart key-value store with no native dependencies \\
+  \hline
+  flutter\_test & Testing & Native Flutter framework, no extra dependencies required \\
+  \hline
 \end{tabular}
+\caption{Technology stack with rationale}
 \end{table}
+
+\subsection{Key Features}
+
+\begin{itemize}[nosep]
+  \item \textbf{Product browsing:} Browse a grid of coffee products with images and names.
+  \item \textbf{Drink customization:} Customize each drink by shot type, size, and ice level, with real-time price updates.
+  \item \textbf{Shopping cart:} Add, view, and remove items before checkout.
+  \item \textbf{Loyalty stamps:} Earn one stamp per order (max 8), then reset for rewards.
+  \item \textbf{Reward points:} Earn points based on order value and redeem them for free items.
+  \item \textbf{Order tracking:} View ongoing and past orders with swipe-to-toggle status.
+  \item \textbf{Profile management:} Edit name, email, phone, address, and avatar with inline editing.
+  \item \textbf{Data persistence:} All data persists across app restarts via Hive.
+\end{itemize}
+
+\subsection{New Features}
+
+\begin{itemize}[nosep]
+  \item \textbf{Edit Cart Item:} Cart line items are tappable. Tapping opens the Details screen pre-filled with the item's current customizations and quantity.
+  \item \textbf{Centered Add-to-Cart Notification:} ``Added to cart'' shows as a centered card overlay instead of a bottom snackbar, auto disappears after 1 second.
+\end{itemize}
+
+\subsection{Lifecycle Management}
+
+The app persists runtime state across Flutter lifecycle transitions to prevent data loss. On each lifecycle state change (\texttt{paused}, \texttt{inactive}, \texttt{detached}, \texttt{hidden}), the current cart items, orders, and loyalty data are saved to Hive immediately. On app resume (\texttt{resumed}), the persisted state is restored and viewmodels are refreshed.
+
+\begin{itemize}[nosep]
+  \item \textbf{Edit Cart Item:} Cart line items are tappable. Tapping opens the Details screen pre-filled with the item's current customizations and quantity.
+  \item \textbf{Centered Add-to-Cart Notification:} ``Added to cart'' shows as a centered card overlay instead of a bottom snackbar, auto disappears after 1 second.
+\end{itemize}

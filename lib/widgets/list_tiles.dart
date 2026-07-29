@@ -5,11 +5,17 @@ import 'package:the_code_cup/viewmodels/ui_models.dart';
 class CartLineTile extends StatelessWidget {
   final CartLineUi line;
   final ValueChanged<int> onDismissed;
+  final VoidCallback? onTap;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
 
   const CartLineTile({
     super.key,
     required this.line,
     required this.onDismissed,
+    this.onTap,
+    this.onIncrement,
+    this.onDecrement,
   });
 
   @override
@@ -28,8 +34,10 @@ class CartLineTile extends StatelessWidget {
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
       ),
       onDismissed: (_) => onDismissed(line.index),
-      child: SurfaceCard(
-        child: Row(
+      child: GestureDetector(
+        onTap: onTap,
+        child: SurfaceCard(
+          child: Row(
           children: [
             Expanded(
               child: Column(
@@ -56,18 +64,57 @@ class CartLineTile extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              line.quantityLabel,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+            const SizedBox(width: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IgnorePointer(
+                    ignoring: line.quantity <= 1,
+                    child: GestureDetector(
+                      onTap: onDecrement,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.remove,
+                          size: 16,
+                          color: line.quantity <= 1
+                              ? AppColors.textSecondary.withValues(alpha: 0.3)
+                              : AppColors.activeIcon,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      line.quantityLabel,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onIncrement,
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(Icons.add, size: 16, color: AppColors.activeIcon),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

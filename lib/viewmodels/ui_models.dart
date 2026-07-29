@@ -29,16 +29,22 @@ class LoyaltyCardUi {
 class CartLineUi {
   final int index;
   final String dismissKey;
+  final String productId;
   final String name;
   final String customizations;
+  final int quantity;
   final String quantityLabel;
+  final Map<String, String> selections;
 
   const CartLineUi({
     required this.index,
     required this.dismissKey,
+    required this.productId,
     required this.name,
     required this.customizations,
+    required this.quantity,
     required this.quantityLabel,
+    required this.selections,
   });
 }
 

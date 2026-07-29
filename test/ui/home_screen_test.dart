@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_code_cup/constants/app_colors.dart';
 import 'package:the_code_cup/data/seed_data.dart';
+import 'package:the_code_cup/models/cart_item.dart';
 import 'package:the_code_cup/viewmodels/app_view_models.dart';
 import 'package:the_code_cup/views/details_screen.dart';
 import 'test_app.dart';
@@ -43,6 +44,21 @@ void main() {
     testWidgets('shows cart icon in header', (tester) async {
       await tester.pumpWidget(buildApp());
       expect(find.byIcon(Icons.shopping_cart_outlined), findsOneWidget);
+    });
+
+    testWidgets('shows badge with cart count when items added', (tester) async {
+      await tester.pumpWidget(buildApp());
+      expect(find.text('1'), findsNothing);
+
+      app.repo.cartItems.add(CartItem(
+        product: SeedData.products[0],
+        selectedCustomizations: {},
+        quantity: 1,
+      ));
+      app.repo.notifyListeners();
+      await tester.pump();
+
+      expect(find.text('1'), findsOneWidget);
     });
 
     testWidgets('avatar is a CircleAvatar with correct radius and color', (

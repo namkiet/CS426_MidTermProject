@@ -30,6 +30,7 @@ class HomeScreen extends StatelessWidget {
         body: createBody(
           userName: viewModel.userName,
           userInitial: viewModel.userInitial,
+          cartItemCount: viewModel.cartItemCount,
           loyaltyCard: viewModel.loyaltyCard,
           products: viewModel.products,
           onCartTap: onOpenCart,
@@ -49,6 +50,7 @@ class HomeScreen extends StatelessWidget {
   static Widget createBody({
     required String userName,
     required String userInitial,
+    required int cartItemCount,
     required LoyaltyCardUi loyaltyCard,
     required List<ProductCardUi> products,
     required VoidCallback onCartTap,
@@ -61,6 +63,7 @@ class HomeScreen extends StatelessWidget {
             _Header(
               name: userName,
               initial: userInitial,
+              cartItemCount: cartItemCount,
               onCartTap: onCartTap,
             ),
             LoyaltyCardBlock(card: loyaltyCard, dark: true),
@@ -78,11 +81,13 @@ class HomeScreen extends StatelessWidget {
 class _Header extends StatelessWidget {
   final String name;
   final String initial;
+  final int cartItemCount;
   final VoidCallback onCartTap;
 
   const _Header({
     required this.name,
     required this.initial,
+    required this.cartItemCount,
     required this.onCartTap,
   });
 
@@ -125,10 +130,14 @@ class _Header extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: onCartTap,
-                child: const Icon(
-                  Icons.shopping_cart_outlined,
-                  color: AppColors.activeIcon,
-                  size: 24,
+                child: Badge(
+                  isLabelVisible: cartItemCount > 0,
+                  label: Text('$cartItemCount'),
+                  child: const Icon(
+                    Icons.shopping_cart_outlined,
+                    color: AppColors.activeIcon,
+                    size: 24,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),

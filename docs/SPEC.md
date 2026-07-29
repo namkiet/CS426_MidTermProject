@@ -124,3 +124,13 @@ Score = Min(10, (Total + Additional Criteria) / 15)
 ```
 
 Total is capped at **150** from all requirements above.
+
+## New Features
+
+**9. Edit Cart Item**
+   - **UI:** Cart line items are tappable. Tapping opens the Details screen pre-filled with the item's current customizations and quantity.
+   - **Interaction:** On save, replaces the old group (all flat items sharing the same product+customizations) with the new one. Grouped lines show combined quantities.
+
+**10. Centered Add-to-Cart Notification**
+   - **UI:** "Added to cart" shows as a centered card overlay instead of a bottom snackbar.
+   - **Interaction:** Auto-dismisses after 1 second. Double-tap guard prevents multiple simultaneous additions.

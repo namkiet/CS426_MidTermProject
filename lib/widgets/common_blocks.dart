@@ -128,15 +128,24 @@ class PointsBalanceCard extends StatelessWidget {
 
 class EmptyStateText extends StatelessWidget {
   final String message;
+  final IconData? icon;
 
-  const EmptyStateText(this.message, {super.key});
+  const EmptyStateText(this.message, {super.key, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text(
-        message,
-        style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null)
+            Icon(icon, size: 48, color: AppColors.textSecondary),
+          if (icon != null) const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
+          ),
+        ],
       ),
     );
   }

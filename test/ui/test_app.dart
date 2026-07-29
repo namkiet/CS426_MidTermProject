@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_code_cup/navigation/app_navigator.dart';
 import 'package:the_code_cup/viewmodels/app_view_models.dart';
+import 'package:the_code_cup/viewmodels/ui_models.dart';
 import 'package:the_code_cup/views/cart_screen.dart';
 import 'package:the_code_cup/views/details_screen.dart';
 import 'package:the_code_cup/views/home_screen.dart';
@@ -61,10 +62,15 @@ Widget testProfile(AppViewModels app) => ProfileScreen(
       onTabSelected: (_) {},
     );
 
-Widget testCart(AppViewModels app, {VoidCallback? onCheckoutSuccess}) =>
+Widget testCart(
+  AppViewModels app, {
+  VoidCallback? onCheckoutSuccess,
+  void Function(CartLineUi line)? onEditItem,
+}) =>
     CartScreen(
       viewModel: app.cart,
       onCheckoutSuccess: onCheckoutSuccess ?? () {},
+      onEditItem: onEditItem ?? (_) {},
     );
 
 Widget testDetails(

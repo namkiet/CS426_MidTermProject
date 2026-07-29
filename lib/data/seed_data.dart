@@ -12,8 +12,7 @@ class SeedData {
       name: 'Espresso',
       description: 'Strong and bold classic espresso shot',
       basePrice: 25000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/espresso.jpeg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 5000.0},
         'shot': {'Single': 0.0, 'Double': 10000.0},
@@ -25,8 +24,7 @@ class SeedData {
       name: 'Latte',
       description: 'Smooth espresso with steamed milk',
       basePrice: 35000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1561882468-9110e97e5c52?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/latte.jpg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 5000.0},
         'ice': {'Hot': 0.0, 'Iced': 0.0},
@@ -37,8 +35,7 @@ class SeedData {
       name: 'Cappuccino',
       description: 'Espresso with foamy milk topping',
       basePrice: 30000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/cappuccino.jpg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 5000.0},
         'shot': {'Single': 0.0, 'Double': 10000.0},
@@ -50,8 +47,7 @@ class SeedData {
       name: 'Americano',
       description: 'Espresso diluted with hot water',
       basePrice: 28000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/americano.jpeg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 4000.0},
         'shot': {'Single': 0.0, 'Double': 10000.0},
@@ -63,8 +59,7 @@ class SeedData {
       name: 'Mocha',
       description: 'Espresso with chocolate and milk',
       basePrice: 40000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1578314675249-a6910f80cc39?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/mocha.jpeg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 5000.0},
         'shot': {'Single': 0.0, 'Double': 10000.0},
@@ -76,8 +71,7 @@ class SeedData {
       name: 'Flat White',
       description: 'Smooth espresso with velvety milk',
       basePrice: 38000,
-      imageUrl:
-          'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=400&fit=crop',
+      imageUrl: 'assets/images/flatwhite.jpg',
       availableCustomizations: {
         'size': {'Small': 0.0, 'Large': 5000.0},
         'ice': {'Hot': 0.0, 'Iced': 0.0},

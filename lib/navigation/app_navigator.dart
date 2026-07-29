@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_code_cup/viewmodels/app_view_models.dart';
+import 'package:the_code_cup/viewmodels/ui_models.dart';
 import 'package:the_code_cup/views/cart_screen.dart';
 import 'package:the_code_cup/views/details_screen.dart';
 import 'package:the_code_cup/views/home_screen.dart';
@@ -65,6 +66,25 @@ class AppNavigator {
         builder: (_) => CartScreen(
           viewModel: vms.cart,
           onCheckoutSuccess: () => openOrderSuccess(context),
+          onEditItem: (line) => openEditDetails(context, line),
+        ),
+      ),
+    );
+  }
+
+  static void openEditDetails(BuildContext context, CartLineUi line) {
+    final vms = _vms(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetailsScreen(
+          productId: line.productId,
+          home: vms.home,
+          cart: vms.cart,
+          onOpenCart: () => openCart(context),
+          groupIndex: line.index,
+          initialSelections: line.selections,
+          initialQuantity: line.quantity,
         ),
       ),
     );
@@ -74,16 +94,13 @@ class AppNavigator {
     final vms = _vms(context);
     Navigator.push(
       context,
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => DetailsScreen(
+      MaterialPageRoute(
+        builder: (_) => DetailsScreen(
           productId: productId,
           home: vms.home,
           cart: vms.cart,
           onOpenCart: () => openCart(context),
         ),
-        transitionsBuilder: (_, _, _, child) => child,
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
       ),
     );
   }

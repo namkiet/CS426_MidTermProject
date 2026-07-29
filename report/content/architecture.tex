@@ -1,3 +1,4 @@
+% ══════════════════════════════════════════════════════════
 \section{Architecture}
 
 The application follows the \textbf{Model--View--ViewModel (MVVM)} pattern with manual dependency injection (no DI framework).
@@ -5,25 +6,9 @@ The application follows the \textbf{Model--View--ViewModel (MVVM)} pattern with 
 \subsection{Layer Diagram}
 
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  box/.style={draw, rounded corners, minimum width=5cm, minimum height=1cm,
-              align=center, font=\small\sffamily},
-  arr/.style={-{Stealth[length=3mm]}, thick},
-  node distance=1.2cm
-]
-  \node[box, fill=blue!15]   (view)  {Views (Screens \& Widgets)};
-  \node[box, fill=orange!15, below=of view] (vm)    {ViewModels (ChangeNotifier)};
-  \node[box, fill=green!15,  below=of vm]   (model) {Models (Domain Entities)};
-  \node[box, fill=purple!15, below=of model](repo)  {Repository / Services};
-  \node[box, fill=gray!15,   below=of repo] (store) {SharedPreferences};
-
-  \draw[arr] (view)  -- node[right, font=\scriptsize]{listens to} (vm);
-  \draw[arr] (vm)    -- node[right, font=\scriptsize]{operates on} (model);
-  \draw[arr] (vm)    -- node[right, font=\scriptsize]{reads/writes} (repo);
-  \draw[arr] (repo)  -- node[right, font=\scriptsize]{persists via} (store);
-\end{tikzpicture}
-\caption{MVVM architecture layers}
+  \centering
+  \includegraphics[width=0.7\textwidth]{images/layer-diagram.png}
+  \caption{Layer Diagram}
 \end{figure}
 
 \subsection{Layer Responsibilities}
@@ -42,5 +27,5 @@ The application follows the \textbf{Model--View--ViewModel (MVVM)} pattern with 
     \texttt{AppRepository} aggregates all ViewModels and coordinates cross-cutting concerns (e.g.\ awarding stamps and points after checkout).
 
   \item[Services (\texttt{lib/services/})]
-    \texttt{LocalStorage} wraps \texttt{SharedPreferences} for persisting user profile data and loyalty stamp count.
+    \texttt{LocalStorage} wraps \texttt{Hive} for persisting user profile data, orders, cart items, and loyalty stamp count.
 \end{description}

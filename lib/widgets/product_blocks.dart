@@ -36,10 +36,9 @@ class ProductGridCard extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               child: product.imageUrl != null
-                  ? Image.network(
+                  ? Image.asset(
                       product.imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => const CoffeeFallbackIcon(),
                     )
                   : const CoffeeFallbackIcon(),
             ),
@@ -207,10 +206,9 @@ class NetworkHeroImage extends StatelessWidget {
         width: double.infinity,
         height: height,
         child: imageUrl != null
-            ? Image.network(
+            ? Image.asset(
                 imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => const _FallbackBox(),
               )
             : const _FallbackBox(),
       ),

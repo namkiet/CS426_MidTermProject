@@ -59,13 +59,18 @@ void main() {
   });
 
   group('DetailsScreen interactions', () {
-    testWidgets('add to cart shows snackbar but stays on details screen', (
+    testWidgets('add to cart shows centered notification but stays on details screen', (
       tester,
     ) async {
       await tester.pumpWidget(buildApp());
       await tester.tap(find.textContaining('Add to cart'));
-      await tester.pumpAndSettle();
+      await tester.runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
       expect(find.textContaining('Added to cart'), findsOneWidget);
+      // Advance fake clock to fire the auto-dismiss timer
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pump();
       // No navigation on add-to-cart; details screen stays visible.
       expect(find.byType(DetailsScreen), findsOneWidget);
       expect(find.text('My Cart'), findsNothing);

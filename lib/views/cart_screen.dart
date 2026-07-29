@@ -9,11 +9,13 @@ import 'package:the_code_cup/widgets/list_tiles.dart';
 class CartScreen extends StatelessWidget {
   final CartViewModel viewModel;
   final VoidCallback onCheckoutSuccess;
+  final void Function(CartLineUi line) onEditItem;
 
   const CartScreen({
     super.key,
     required this.viewModel,
     required this.onCheckoutSuccess,
+    required this.onEditItem,
   });
 
   @override
@@ -35,6 +37,13 @@ class CartScreen extends StatelessWidget {
           lines: viewModel.lines,
           onDismissed: (index) {
             viewModel.removeAt(index);
+          },
+          onEditItem: onEditItem,
+          onIncrement: (index) {
+            viewModel.incrementGroup(index);
+          },
+          onDecrement: (index) {
+            viewModel.decrementGroup(index);
           },
         ),
       ),
@@ -74,14 +83,20 @@ class CartScreen extends StatelessWidget {
     required bool isEmpty,
     required List<CartLineUi> lines,
     required ValueChanged<int> onDismissed,
+    required void Function(CartLineUi line) onEditItem,
+    required ValueChanged<int> onIncrement,
+    required ValueChanged<int> onDecrement,
   }) {
-    if (isEmpty) return const EmptyStateText('Your cart is empty');
+    if (isEmpty) return const EmptyStateText('Your cart is empty', icon: Icons.shopping_cart_outlined);
     return ListView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: lines.length,
       itemBuilder: (context, index) => CartLineTile(
         line: lines[index],
         onDismissed: onDismissed,
+        onTap: () => onEditItem(lines[index]),
+        onIncrement: () => onIncrement(index),
+        onDecrement: () => onDecrement(index),
       ),
     );
   }

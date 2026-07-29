@@ -12,6 +12,9 @@ class DetailsScreen extends StatefulWidget {
   final HomeViewModel home;
   final CartViewModel cart;
   final VoidCallback onOpenCart;
+  final int? groupIndex;
+  final Map<String, String>? initialSelections;
+  final int? initialQuantity;
 
   const DetailsScreen({
     super.key,
@@ -19,7 +22,12 @@ class DetailsScreen extends StatefulWidget {
     required this.home,
     required this.cart,
     required this.onOpenCart,
+    this.groupIndex,
+    this.initialSelections,
+    this.initialQuantity,
   });
+
+  bool get isEditing => groupIndex != null;
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();
@@ -29,17 +37,35 @@ class _DetailsScreenState extends State<DetailsScreen> {
   int _quantity = 1;
   late Map<String, String> _selections;
   ProductDetailsUi? _details;
+  bool _isAdding = false;
 
   @override
   void initState() {
     super.initState();
     _details = widget.home.detailsFor(widget.productId);
-    _selections = Map.from(_details?.defaultSelections ?? {});
+    _selections = widget.initialSelections != null
+        ? Map.from(widget.initialSelections!)
+        : Map.from(_details?.defaultSelections ?? {});
+    _quantity = widget.initialQuantity ?? 1;
   }
 
   Future<void> _addToCart(VoidCallback onAdded) async {
-    await widget.cart.addToCart(widget.productId, _selections, _quantity);
-    onAdded();
+    if (_isAdding) return;
+    _isAdding = true;
+    if (widget.isEditing) {
+      await widget.cart.replaceGroup(
+        widget.groupIndex!,
+        widget.productId,
+        _selections,
+        _quantity,
+      );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } else {
+      await widget.cart.addToCart(widget.productId, _selections, _quantity);
+      onAdded();
+    }
+    _isAdding = false;
   }
 
   @override
@@ -64,14 +90,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ),
           onAddToCart: () async {
             await _addToCart(() {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Added to cart'),
-                  duration: Duration(seconds: 1),
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                barrierColor: Colors.transparent,
+                builder: (_) => const Center(
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 24,
+                      ),
+                      child: Text(
+                        'Added to cart',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
+              );
+              Future.delayed(
+                const Duration(seconds: 1),
+                () {
+                  if (!mounted) return;
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
               );
             });
           },
+          isEditing: widget.isEditing,
         ),
         body: createBody(
           details: details,
@@ -101,10 +151,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
   static Widget createNavigationBar({
     required String totalLabel,
     required VoidCallback onAddToCart,
+    bool isEditing = false,
   }) =>
       BottomActionBar(
         child: PrimaryButton(
-          label: 'Add to cart  ·  $totalLabel',
+          label:
+              '${isEditing ? 'Update cart' : 'Add to cart'}  ·  $totalLabel',
           expanded: true,
           onPressed: onAddToCart,
         ),

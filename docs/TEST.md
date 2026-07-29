@@ -112,7 +112,7 @@ UI tests cover user interactions with screen components in isolation. Each inter
 
 | Interaction | Tests |
 |---|---|
-| Add to Cart | Persist item with customizations; SnackBar confirmation; navigate to My Cart |
+| Add to Cart | Persist item with customizations; centered overlay confirmation; navigate to My Cart |
 | Cart Preview | Navigate to My Cart screen |
 | Cart Item Removal | Swipe left removes item from list; total recalculated |
 | Checkout | Empty cart cannot checkout; cart cleared after successful checkout |
@@ -125,7 +125,7 @@ UI tests cover user interactions with screen components in isolation. Each inter
 
 ## Integration Tests
 
-File: `test/unit/integration_test.dart`
+File: `test/integration_test.dart`
 
 Integration tests exercise real workflows spanning multiple entities without mocking:
 

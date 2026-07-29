@@ -20,6 +20,14 @@ class HomeViewModel extends RepoViewModel {
     );
   }
 
+  int get cartItemCount {
+    final seen = <String>{};
+    for (final item in repo.cartItems) {
+      seen.add('${item.product.id}:${item.selectedCustomizations}');
+    }
+    return seen.length;
+  }
+
   List<ProductCardUi> get products => repo.products
       .map((p) => ProductCardUi(id: p.id, name: p.name, imageUrl: p.imageUrl))
       .toList();
