@@ -33,6 +33,8 @@ See [docs/TEST.md](docs/TEST.md) for the test plan.
 ```bash
 # Clone the project
 git clone <repo-url>
+
+# Navigate to the project folder
 cd the_code_cup
 
 # Install dependencies
