@@ -32,10 +32,10 @@ See [docs/TEST.md](docs/TEST.md) for the test plan.
 
 ```bash
 # Clone the project
-git clone <repo-url>
+git clone https://github.com/namkiet/CS426_MidTermProject
 
 # Navigate to the project folder
-cd the_code_cup
+cd CS426_MidTermProject/
 
 # Install dependencies
 flutter pub get
